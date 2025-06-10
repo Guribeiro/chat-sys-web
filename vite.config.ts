@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import tailwindcss from '@tailwindcss/vite'
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
@@ -13,6 +14,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' &&
     componentTagger(),
+    tailwindcss(),
   ].filter(Boolean),
   resolve: {
     alias: {
