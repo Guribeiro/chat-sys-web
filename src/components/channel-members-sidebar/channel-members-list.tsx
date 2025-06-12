@@ -96,7 +96,14 @@ export function ChannelMembersList({ data, error, loading }: ChannelMembersListP
                 <DialogHeader>
                   <DialogTitle>Remover do canal</DialogTitle>
                   <DialogDescription>
-                    Deseja mesmo <span className='text-red-500 font-medium'>remover</span> o membro <strong>{member.usuario_nome}</strong> do canal ?
+                    {auth.user.id === member.usuario_id || member.usuario_adm === 'SIM' ? (
+                      <p>Você não tem permissão para <span className='text-red-500 font-medium'>remover</span> este membro</p>
+                    ) : (
+                      <p>
+                        Deseja mesmo <span className='text-red-500 font-medium'>remover</span> o membro <strong>{member.usuario_nome}</strong> do canal ?
+                      </p>
+
+                    )}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -107,7 +114,7 @@ export function ChannelMembersList({ data, error, loading }: ChannelMembersListP
                   <Button
                     variant='destructive'
                     type="submit"
-                    disabled={removeMemberFromChannelMutation.isPending || auth.user.id === member.usuario_id}
+                    disabled={removeMemberFromChannelMutation.isPending || auth.user.id === member.usuario_id || member.usuario_adm === 'SIM'}
                     onClick={() => removeMemberFromChannelMutation.mutate({ member_id: member.id })}
                   >
                     {removeMemberFromChannelMutation.isPending ? (
