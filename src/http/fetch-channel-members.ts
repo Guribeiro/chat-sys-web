@@ -4,6 +4,7 @@ export type Member = {
   id: number
   usuario_id: number
   usuario_nome: string
+  usuario_adm: string | null
   canal_id: number
   criado_em: string
   criado_em_formatada: string

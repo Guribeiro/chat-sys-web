@@ -1,7 +1,7 @@
 import { Member } from "@/http/fetch-channel-members"
 import { EmptyIndicator } from "../empty-indicator"
 import { useParams } from "react-router"
-import { Loader2, AlertCircleIcon } from "lucide-react"
+import { Loader2, AlertCircleIcon, Crown } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 import {
@@ -68,7 +68,7 @@ export function ChannelMembersList({ data, error, loading }: ChannelMembersListP
   }
 
   return (
-    <ul className='overflow-y-scroll max-h-96 no-scrollbar gap-2 flex flex-col'>
+    <ul className='overflow-y-scroll max-h-52 no-scrollbar gap-2 flex flex-col'>
       {!data?.length && !loading && <EmptyIndicator title='Não há canais por aqui' />}
       {data?.map(member => (
         <li
@@ -85,8 +85,11 @@ export function ChannelMembersList({ data, error, loading }: ChannelMembersListP
                       alt={member.usuario_nome}
                       className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
                     />
-                    <span className='truncate'>{member.usuario_nome}</span>
+                    <span className={`truncate capitalize ${auth.user.id === member.usuario_id ? 'text-green-500 animate-pulse' : ''}`}>{member.usuario_nome}</span>
                   </div>
+                  {member.usuario_adm === 'SIM' && (
+                    <Crown className="w-4 h-4 text-yellow-500" />
+                  )}
                 </div>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">

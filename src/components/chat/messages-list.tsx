@@ -56,7 +56,6 @@ export function MessagesList({ messages, error, loading, lastPage, fetchNextPage
     )
   }
 
-
   return (
     <div>
       <div className='flex items-center w-full justify-center'>

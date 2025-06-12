@@ -25,6 +25,7 @@ import { fetchChannelMemebers, Member } from '@/http/fetch-channel-members';
 
 import { authSlice } from '@/store/auth';
 import { ChannelMembersList } from './channel-members-list';
+import { handleAxiosError } from '@/lib/axios-error-handler';
 
 type Page = {
   nextPage: number | null
@@ -55,6 +56,10 @@ export const ChannelMembersSidebar = () => {
       return data
     },
   })
+
+  const errorMessage = useMemo(() => {
+    if (error) return handleAxiosError(error)
+  }, [error])
 
   const members = useMemo(() => {
     return data?.pages.flatMap(page => page.members).reverse().map(member => {
@@ -100,7 +105,7 @@ export const ChannelMembersSidebar = () => {
         </CardHeader>
         <CollapsibleContent>
           <CardContent className=" space-y-1">
-            <ChannelMembersList data={members} error={error?.message} loading={isFetching} />
+            <ChannelMembersList data={members} error={errorMessage} loading={isFetching} />
             <div className='flex items-center w-full justify-center'>
               {lastPage?.nextPage && (
                 <Button
