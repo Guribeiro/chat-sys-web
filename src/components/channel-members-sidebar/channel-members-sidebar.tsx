@@ -9,33 +9,21 @@ import {
 } from '@/components/ui/card';
 import { ChannelMemberForm } from './channel-member-form';
 
-
-
 import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent
 } from '../ui/collapsible';
 import {
-  AlertCircleIcon,
   ChevronDown,
   ChevronUp,
-  Loader2,
   Users2,
-  X
 } from 'lucide-react';
 import { Separator } from '../ui/separator';
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchChannelMemebers, Member } from '@/http/fetch-channel-members';
-import { removeMemberFromChannel } from '@/http/remove-member-from-channel'
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle
-} from '../ui/alert';
+
 import { authSlice } from '@/store/auth';
-import { toast } from 'sonner';
-import { EmptyIndicator } from '../empty-indicator';
 import { ChannelMembersList } from './channel-members-list';
 
 type Page = {

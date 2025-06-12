@@ -14,12 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from "../ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeMemberFromChannel } from "@/http/remove-member-from-channel";
 import { toast } from "sonner";
 import { authSlice } from "@/store/auth";
+import { handleAxiosError } from "@/lib/axios-error-handler";
 
 type ChannelMembersListProps = {
   data: Member[]
@@ -44,7 +44,8 @@ export function ChannelMembersList({ data, error, loading }: ChannelMembersListP
       toast.success('Membro adicionado com sucesso')
     },
     onError: (error) => {
-      toast.error(error.message)
+      const errorMessage = handleAxiosError(error)
+      toast.error(errorMessage)
     },
   })
 
