@@ -1,21 +1,43 @@
-import { Input } from '@/components/ui/input';
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
-import { Button } from './ui/button';
-import { Plus } from 'lucide-react';
-import { z } from 'zod';
 import { useEffect, useMemo, useState } from 'react';
+import { Loader2, Plus } from 'lucide-react';
+import { z } from 'zod';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocation, useNavigate } from 'react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '../ui/form';
+import { Button } from '../ui/button';
+
+import { createChannel } from '@/http/create-channel';
 
 const createChannelFormSchema = z.object({
-  title: z.string().min(1, 'Adicione um titulo para o canal').nullable(),
-  description: z.string().nullable(),
+  title: z.string().min(1, 'Adicione um titulo para o canal'),
+  description: z.string().min(1, 'Adicione uma descrição para o canal'),
 })
 
 type CreateChannelForm = z.infer<typeof createChannelFormSchema>
+
+const defaultValues: CreateChannelForm = {
+  title: '',
+  description: ''
+}
 
 export const ChannelForm = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -23,31 +45,51 @@ export const ChannelForm = () => {
   const { search } = useLocation()
   const navigate = useNavigate()
 
+  const queryClient = useQueryClient()
+
   const searchQueries = useMemo(() => {
     return new URLSearchParams(search)
   }, [search])
 
   const form = useForm<CreateChannelForm>({
-    resolver: zodResolver(createChannelFormSchema)
+    resolver: zodResolver(createChannelFormSchema),
+    defaultValues
+  })
+
+  const createChannelMutation = useMutation({
+    mutationKey: ['channels'],
+    mutationFn: async ({ title, description }: CreateChannelForm) => {
+      const { data } = await createChannel({ title, description })
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['channels'] });
+      handleCancelCreatingChannel()
+      toast.success('Canal criado com sucesso')
+    },
+    onError: (error) => {
+      form.setValue('title', '')
+      form.setValue('description', '')
+
+      toast.error(error.message)
+    },
   })
 
   const handleCreateChannel = ({ title, description }: CreateChannelForm) => {
-    console.log({ title, description })
+    createChannelMutation.mutate({ title, description })
+
   };
 
   const handleCancelCreatingChannel = () => {
     setIsDialogOpen(false)
-    form.reset({
-      title: null,
-      description: null
-    })
+    form.reset(defaultValues)
 
     navigate(location.pathname, { replace: true });
   }
 
   useEffect(() => {
-    form.setValue('title', searchQueries.get('title'))
-    form.setValue('description', searchQueries.get('description'))
+    form.setValue('title', searchQueries.get('title') || defaultValues.title)
+    form.setValue('description', searchQueries.get('description') || defaultValues.description)
   }, [searchQueries, form])
 
 
@@ -58,7 +100,7 @@ export const ChannelForm = () => {
           <Plus className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby='create-channel-dialog' aria-description='Criar canal'>
         <DialogHeader>
           <DialogTitle>Criar canal</DialogTitle>
         </DialogHeader>
@@ -74,7 +116,7 @@ export const ChannelForm = () => {
                     <Input
                       type="text"
                       required
-                      placeholder="e.g. announcements"
+                      placeholder="Exemplo: Produção"
                       {...field}
                     />
                   </FormControl>
@@ -101,7 +143,18 @@ export const ChannelForm = () => {
             />
 
             <div className="flex space-x-2">
-              <Button type="submit" className="flex-1 text-foreground active:bg-primary/60 ">Create Channel</Button>
+              <Button
+                type="submit"
+                className="flex-1 text-foreground active:bg-primary/60"
+                disabled={createChannelMutation.isPending}
+              >
+                {createChannelMutation.isPending ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  'Criar canal'
+                )}
+
+              </Button>
               <Button type="button" variant="outline" onClick={handleCancelCreatingChannel}>
                 Cancelar
               </Button>

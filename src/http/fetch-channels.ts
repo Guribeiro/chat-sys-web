@@ -1,9 +1,10 @@
 import { api } from "./api-client";
 
-type Channel = {
+export type Channel = {
   id: number
   titulo: string
   descricao: string
+  slug: string
   criado_em: string
 }
 

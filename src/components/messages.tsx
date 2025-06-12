@@ -35,7 +35,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           {!isCurrentUser && (
             <p className="text-xs font-medium text-gray-500 mb-1">{username}</p>
           )}
-          <p className="text-sm leading-relaxed">{content}</p>
+          <p className="text-sm leading-relaxed break-all">{content}</p>
           <p className={`text-xs mt-1 ${isCurrentUser ? 'text-blue-100' : 'text-gray-400'
             }`}>
             {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}

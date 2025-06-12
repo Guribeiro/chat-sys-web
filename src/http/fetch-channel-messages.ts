@@ -11,7 +11,7 @@ export type MessageItem = {
 }
 
 type Request = {
-  channelId: string
+  slug: string
   page?: number
 }
 
@@ -21,8 +21,8 @@ export type FetchChannelMessagesResponse = {
   previousPage: number | null
 }
 
-export async function fetchChannelMessages({ channelId, page = 1 }: Request) {
-  return api.get<FetchChannelMessagesResponse>(`/chat-system/channels/${channelId}/messages`, {
+export async function fetchChannelMessages({ slug, page = 1 }: Request) {
+  return api.get<FetchChannelMessagesResponse>(`/chat-system/channels/${slug}/messages`, {
     params: {
       page
     }

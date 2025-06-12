@@ -3,11 +3,12 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router"
 
 import { SigninPage } from "@/pages/signin";
 import { HomePage } from "@/pages/home";
+import { ChannelsPage } from "@/pages/channels";
 import PrivateRoute from "./private-route";
 import { AnimatePresence } from 'framer-motion';
 
 import { PageTransition } from "./transition";
-import Chat from "@/components/Chat";
+import { Chat } from "@/components/chat";
 
 export const IndexRoutes = () => {
   const { auth } = authSlice(state => state)
@@ -22,13 +23,13 @@ export const IndexRoutes = () => {
               element={<PrivateRoute />}
             >
               <Route
-                path="/"
+                path="/channels"
                 element={
-                  <HomePage />
+                  <ChannelsPage />
                 }
               >
                 <Route
-                  path="/:channelId"
+                  path="/channels/:slug"
                   element={
                     <PageTransition>
                       <Chat />
@@ -39,7 +40,7 @@ export const IndexRoutes = () => {
 
             </Route>
           )}
-          <Route path="*" element={<Navigate to={auth ? '/dashboard' : '/'} />} />
+          <Route path="*" element={<Navigate to={auth ? '/channels' : '/'} />} />
         </Routes>
       </BrowserRouter>
     </AnimatePresence>
