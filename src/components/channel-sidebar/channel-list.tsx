@@ -47,7 +47,7 @@ export function ChannelList({ channels, error, loading }: ChannelListProps) {
             >
               <div className={`flex items-center space-x-2 text-sm ${slug === channel.slug ? 'text-green-500' : 'font-normal'}`}>
                 <Hash className="w-4 h-4 " />
-                <span className='text-sm truncate' >{channel.titulo}</span>
+                <span className='text-sm truncate capitalize' >{channel.titulo}</span>
               </div>
               <p className="text-xs text-gray-500 ml-6 mt-1 truncate">{channel.descricao}</p>
             </button>

@@ -1,6 +1,6 @@
 import { Channel } from "@/http/fetch-channels"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Hash, Plus, Users } from "lucide-react";
+import { ChevronDown, ChevronUp, Hash, Users } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { AdminChannelMembersList } from "./admin-channel-members-list";
@@ -31,7 +31,7 @@ export function AdminChannelCard({ data: channel }: AdminChannelCardProps) {
                 <Hash className="h-3 w-3 lg:w-5 lg:h-5 text-white" />
               </div>
               <div>
-                <CardTitle className="text-lg">#{channel.titulo}</CardTitle>
+                <CardTitle className="text-lg capitalize">#{channel.titulo}</CardTitle>
                 {channel.descricao && (
                   <p className="text-sm text-foreground/50 mt-1">{channel.descricao}</p>
                 )}
@@ -42,27 +42,30 @@ export function AdminChannelCard({ data: channel }: AdminChannelCardProps) {
               <span>{channel.membros_count} membros</span>
             </div>
           </div>
+
         </CardHeader>
 
-        <CollapsibleContent>
-          <CardContent>
-            <div className="space-y-4">
+        <CardContent>
+          <div className="flex justify-end">
+            <Button asChild variant='outline' className='text-foreground'>
+              <Link to={`/admin/channels/${channel.slug}/members`}>
+                <Users className="w-4 h-4" />
+                <p className='hidden lg:flex'>Gerenciar membros</p>
+              </Link>
+            </Button>
+          </div>
+          <CollapsibleContent>
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-foreground">Membros do canal:</h4>
-                <Link to={`/admin/channels/${channel.slug}/members`}>
-                  <Button variant='outline' className='text-foreground'>
-                    <Users className="w-4 h-4" />
-                    <p className='hidden lg:flex'>Gerenciar membros</p>
-                  </Button>
-                </Link>
               </div>
               <AdminChannelMembersList slug={channel.slug} />
             </div>
-          </CardContent>
-        </CollapsibleContent>
+          </CollapsibleContent>
+        </CardContent>
         <div className="flex justify-center py-2">
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" >
+          <Button asChild variant="ghost" >
+            <CollapsibleTrigger >
               {isOpen ? (
                 <>
                   <span className="hidden lg:flex">Mostrar menos</span>
@@ -74,8 +77,8 @@ export function AdminChannelCard({ data: channel }: AdminChannelCardProps) {
                   <ChevronDown />
                 </>
               )}
-            </Button>
-          </CollapsibleTrigger>
+            </CollapsibleTrigger>
+          </Button>
         </div>
       </Collapsible>
     </Card>

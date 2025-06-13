@@ -89,7 +89,9 @@ export function AdminChannelMembersList({ slug }: AdminChannelMembersListProps) 
 
   return (
     <div className="flex flex-col gap-4">
-      <Outlet />
+      <div>
+        <Outlet />
+      </div>
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {members.map((member) => (
           <li
@@ -109,9 +111,11 @@ export function AdminChannelMembersList({ slug }: AdminChannelMembersListProps) 
                 </DialogHeader>
 
                 <DialogFooter className="flex flex-col gap-2 lg:gap-0">
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
+                  <Button asChild variant="outline">
+                    <DialogClose >
+                      Cancel
+                    </DialogClose>
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

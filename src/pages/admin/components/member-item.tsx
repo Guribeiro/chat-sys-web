@@ -26,7 +26,7 @@ export function MemberItem({ data }: MemberItemProps) {
             <span className={`truncate capitalize ${auth.user.id === data.usuario_id ? 'text-green-500 animate-pulse' : ''}`}>{data.usuario_nome}</span>
           </div>
           {data.usuario_adm === 'SIM' && (
-            <Crown className="w-4 h-4 text-yellow-500" />
+            <Crown className="w-4 h-4 text-yellow-500 animate-pulse" />
           )}
         </div>
       </DialogTrigger>
@@ -36,7 +36,7 @@ export function MemberItem({ data }: MemberItemProps) {
         </DialogHeader>
         <div className="mt-4 w-full flex flex-col justify-center items-center space-y-2">
           {data.usuario_adm === 'SIM' && (
-            <Crown className="w-4 h-4 text-yellow-500" />
+            <Crown className="w-4 h-4 text-yellow-500 animate-pulse" />
           )}
           <Avatar>
             <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.usuario_nome}`} alt={data.usuario_nome} />

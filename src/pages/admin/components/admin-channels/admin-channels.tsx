@@ -60,12 +60,12 @@ export function AdminChannels() {
   }
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 pb-4'>
       <div className='flex justify-end'>
         <AdminChannelForm />
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-2">
         {channels.map((channel) => <AdminChannelCard key={channel.id} data={channel} />)}
       </div>
       <Outlet />
