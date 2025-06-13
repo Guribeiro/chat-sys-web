@@ -11,7 +11,7 @@ export const Header = () => {
   const { auth } = authSlice(state => state)
   return (
     <header className="flex items-center justify-between py-4">
-      <img src={logo} className='w-28 md:w-44' />
+      <img src={logo} className='w-28 lg:w-44' />
       <div className='flex items-center gap-2'>
         {auth.user.admin && (
           <div className='flex items-center gap-2'>

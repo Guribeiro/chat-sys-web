@@ -26,6 +26,7 @@ import {
 import { Button } from '../../../components/ui/button';
 
 import { createChannel } from '@/http/create-channel';
+import { handleAxiosError } from '@/lib/axios-error-handler';
 
 const createChannelFormSchema = z.object({
   title: z.string().min(1, 'Adicione um titulo para o canal'),
@@ -72,10 +73,14 @@ export const AdminChannelForm = ({ buttonText = 'Criar canal' }: AdminChannelFor
       toast.success('Canal criado com sucesso')
     },
     onError: (error) => {
-      form.setValue('title', '')
-      form.setValue('description', '')
+      const errorMessage = handleAxiosError(error)
 
-      toast.error(error.message)
+      if (errorMessage.includes('título')) {
+        form.setError('title', { message: errorMessage })
+        return
+      }
+
+      toast.error(errorMessage)
     },
   })
 
