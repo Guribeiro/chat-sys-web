@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 
+import ChatFallbackSVG from '@/assets/chat-fallback.svg'
 import { fetchChannelMessages, MessageItem } from '@/http/fetch-channel-messages';
 import { CreateMessageForm } from './create-message-form';
 import { MessagesList } from './messages-list';
@@ -24,6 +25,7 @@ export const Chat = () => {
     queryKey: ['channels', slug],
     refetchInterval: ONE_MINUTE_IN_MILLISECONDS,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
     initialData: {
       pages: [],
       pageParams: [],

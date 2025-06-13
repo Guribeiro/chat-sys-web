@@ -37,7 +37,7 @@ export function ChannelList({ channels, error, loading }: ChannelListProps) {
       {channels?.map(channel => (
         <li
           key={channel.id}
-          className={`group border-2 ${slug === channel.slug ? 'border-green-500' : 'border-transparent'} w-full text-left rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer`}
+          className={`group border-1 ${slug === channel.slug ? 'border-green-500 hover:border-green-500' : 'border-transparent'} hover:border-foreground/10 w-full text-left rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer`}
         >
           <Link
             to={`/channels/${channel.slug}`}
@@ -46,7 +46,7 @@ export function ChannelList({ channels, error, loading }: ChannelListProps) {
               className={`w-full text-left p-2 rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer`}
             >
               <div className={`flex items-center space-x-2 text-sm ${slug === channel.slug ? 'text-green-500' : 'font-normal'}`}>
-                <Hash className="w-4 h-4" />
+                <Hash className="w-4 h-4 " />
                 <span className='text-sm truncate' >{channel.titulo}</span>
               </div>
               <p className="text-xs text-gray-500 ml-6 mt-1 truncate">{channel.descricao}</p>

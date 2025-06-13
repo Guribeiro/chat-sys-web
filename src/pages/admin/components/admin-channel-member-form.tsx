@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { ArrowLeft, Hash, Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, Outlet, useNavigate, useParams } from 'react-router';
+import { Outlet, useNavigate, useParams } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -26,7 +26,7 @@ import { Button } from '../../../components/ui/button';
 
 import { createChannelMember } from '@/http/create-channel-member';
 import { MembersCombobox } from '../../../components/channel-members-sidebar/members-combobox';
-import { slugToOriginalText } from '@/lib/utils';
+import { handleAxiosError } from '@/lib/axios-error-handler';
 
 const createChannelMemberFormSchema = z.object({
   member_id: z.string().min(1, 'Adicione um titulo para o canal'),
@@ -37,9 +37,6 @@ type CreateChannelMemberForm = z.infer<typeof createChannelMemberFormSchema>
 const defaultValues: CreateChannelMemberForm = {
   member_id: undefined
 }
-
-
-
 
 export const AdminChannelMemberForm = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -66,8 +63,9 @@ export const AdminChannelMemberForm = () => {
       toast.success('Membro adicionado com sucesso')
     },
     onError: (error) => {
+      const errorMessage = handleAxiosError(error)
       form.setValue('member_id', undefined)
-      toast.error(error.message)
+      form.setError('member_id', { message: errorMessage })
     },
   })
 
@@ -84,27 +82,15 @@ export const AdminChannelMemberForm = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
-            <Hash className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold">#{slugToOriginalText(slug)}</h2>
-          </div>
-        </div>
-      </div>
-      <Link to="/admin/channels" className="inline-flex items-center text-green-600 hover:text-green-800 mb-4">
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Voltar para os canais
-      </Link>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="sm">
-            <Plus className="w-4 h-4" />
-            <p className='text-foreground hidden lg:flex'>Adicionar membro</p>
-          </Button>
-        </DialogTrigger>
+        <div className='flex justify-end'>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              <Plus className="w-4 h-4" />
+              <p className='text-foreground hidden lg:flex'>Adicionar membro</p>
+            </Button>
+          </DialogTrigger>
+        </div>
         <DialogContent aria-describedby='create-channel-dialog' aria-description='Adicionar membro'>
           <DialogHeader>
             <DialogTitle>Adicionar membro</DialogTitle>

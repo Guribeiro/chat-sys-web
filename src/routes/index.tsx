@@ -12,6 +12,7 @@ import { Chat } from "@/components/chat";
 import { AdminChannels } from "@/pages/admin/components/admin-channels";
 import { AdminChannelMemberForm } from "@/pages/admin/components/admin-channel-member-form";
 import { AdminChannelMembers } from "@/pages/admin/components/admin-channel-members";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export const IndexRoutes = () => {
   const { auth } = authSlice(state => state)

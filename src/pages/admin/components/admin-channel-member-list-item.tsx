@@ -77,7 +77,7 @@ export function ChannelMemberListItem({ data: member }: ChannelMemberListItemPro
                 </DialogDescription>
               ) : (
                 <DialogDescription>
-                  Deseja mesmo <span className='text-red-500 font-medium'>remover</span> o membro <strong>{member.usuario_nome}</strong> do canal ?
+                  Deseja mesmo <span className='text-red-500 font-medium'>remover</span> <strong>{member.usuario_nome}</strong> do canal ?
                 </DialogDescription>
               )}
             </DialogHeader>

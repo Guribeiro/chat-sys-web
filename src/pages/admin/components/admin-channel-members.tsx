@@ -9,6 +9,7 @@ import { AlertCircleIcon, ArrowLeft, Divide, Loader2, Users, X } from "lucide-re
 import { useMemo } from "react";
 import { Link, Outlet, useParams } from "react-router";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Card } from "@/components/ui/card";
 
 type Page = {
   nextPage: number | null

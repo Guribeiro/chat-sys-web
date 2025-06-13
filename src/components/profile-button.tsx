@@ -5,12 +5,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 import { authSlice } from '@/store/auth'
 import { Button } from './ui/button'
-import { Link } from 'react-router'
+import { AvatarImage } from '@radix-ui/react-avatar'
 
 function getInitials(name: string): string {
   const initials = name
@@ -28,11 +27,12 @@ export function ProfileButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-3 outline-none">
-        <Avatar className="size-10">
-          {auth?.user && (
+        {auth?.user && (
+          <Avatar className='w-8 h-8' >
+            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${auth.user.name}`} alt={auth.user.name} />
             <AvatarFallback>{getInitials(auth.user.name)}</AvatarFallback>
-          )}
-        </Avatar>
+          </Avatar>
+        )}
         <ChevronDown className="size-4 text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

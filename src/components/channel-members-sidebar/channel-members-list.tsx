@@ -33,12 +33,12 @@ export function ChannelMembersList({ data, error, loading }: ChannelMembersListP
 
   return (
     <ul className='overflow-y-scroll max-h-52 no-scrollbar gap-2 flex flex-col'>
-      {!data?.length && !loading && <EmptyIndicator title='Não há canais por aqui' />}
-      <ul>
+      {!data?.length && !loading && <EmptyIndicator title='Não há membros por aqui' />}
+      <ul className="space-y-1">
         {data?.map(member => (
           <li
             key={member.id}
-            className={`border-foreground/10 hover:border-green-500 w-full text-left p-2 rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer`}
+            className={`border-1 border-transparent  hover:border-green-500 w-full text-left p-2 rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer`}
           >
             <MemberItem key={member.id} data={member} />
           </li>

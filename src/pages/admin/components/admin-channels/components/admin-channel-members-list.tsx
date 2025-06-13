@@ -94,7 +94,7 @@ export function AdminChannelMembersList({ slug }: AdminChannelMembersListProps) 
         {members.map((member) => (
           <li
             key={member.id}
-            className={`group border-1 border-foreground/10 hover:border-green-500 w-full text-left p-2 rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer`}
+            className={`group border-1 border-foreground/10 hover:border-green-500 w-full text-left p-2 rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer `}
           >
             <Dialog>
               <DialogTrigger asChild>

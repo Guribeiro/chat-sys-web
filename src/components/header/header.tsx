@@ -5,6 +5,7 @@ import { ProfileButton } from '@/components/profile-button';
 import { authSlice } from '@/store/auth';
 import { Button } from '../ui/button';
 import { Link } from 'react-router';
+import { User } from 'lucide-react';
 
 export const Header = () => {
   const { auth } = authSlice(state => state)
@@ -13,13 +14,17 @@ export const Header = () => {
       <img src={logo} className='w-28 md:w-44' />
       <div className='flex items-center gap-2'>
         {auth.user.admin && (
-          <Button variant='outline' asChild>
-            <Link to='/admin/channels'>
-              Admin
-            </Link>
-          </Button>
+          <div className='flex items-center gap-2'>
+            <Button variant='outline' asChild>
+              <Link to='/admin/channels'>
+                <User className="w-4 h-4" />
+                <span className='text-foreground hidden lg:flex'>
+                  Admin
+                </span>
+              </Link>
+            </Button>
+          </div>
         )}
-        <Separator orientation="vertical" className="h-5" />
         <ModeToggle />
         <Separator orientation="vertical" className="h-5" />
         <ProfileButton />

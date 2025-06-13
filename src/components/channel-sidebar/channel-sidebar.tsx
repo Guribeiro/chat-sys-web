@@ -7,11 +7,9 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '../ui/colla
 import { ChevronDown, ChevronUp, Hash } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchChannels } from '@/http/fetch-channels';
-import { authSlice } from '@/store/auth';
 import { ChannelList } from './channel-list';
 
 export const ChannelSidebar = () => {
-  const { auth } = authSlice(state => state)
   const [collapsed, setCollapsed] = useState(false)
 
   const { data, isFetching, error } = useQuery({
