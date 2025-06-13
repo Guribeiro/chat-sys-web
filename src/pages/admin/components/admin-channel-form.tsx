@@ -22,8 +22,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '../ui/form';
-import { Button } from '../ui/button';
+} from '../../../components/ui/form';
+import { Button } from '../../../components/ui/button';
 
 import { createChannel } from '@/http/create-channel';
 
@@ -39,7 +39,11 @@ const defaultValues: CreateChannelForm = {
   description: ''
 }
 
-export const ChannelForm = () => {
+type AdminChannelFormProps = {
+  buttonText?: string
+}
+
+export const AdminChannelForm = ({ buttonText = 'Criar canal' }: AdminChannelFormProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { search } = useLocation()
@@ -57,13 +61,13 @@ export const ChannelForm = () => {
   })
 
   const createChannelMutation = useMutation({
-    mutationKey: ['channels'],
+    mutationKey: ['admin', 'channels'],
     mutationFn: async ({ title, description }: CreateChannelForm) => {
       const { data } = await createChannel({ title, description })
       return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['channels'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'channels'], });
       handleCancelCreatingChannel()
       toast.success('Canal criado com sucesso')
     },
@@ -77,7 +81,6 @@ export const ChannelForm = () => {
 
   const handleCreateChannel = ({ title, description }: CreateChannelForm) => {
     createChannelMutation.mutate({ title, description })
-
   };
 
   const handleCancelCreatingChannel = () => {
@@ -96,8 +99,9 @@ export const ChannelForm = () => {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-          <Plus className="w-4 h-4" />
+        <Button >
+          <Plus className="text-foreground w-4 h-4" />
+          <p className="text-foreground hidden lg:flex">{buttonText}</p>
         </Button>
       </DialogTrigger>
       <DialogContent aria-describedby='create-channel-dialog' aria-description='Criar canal'>

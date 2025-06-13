@@ -2,11 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ChannelForm } from './channel-form';
 
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '../ui/collapsible';
 import { ChevronDown, ChevronUp, Hash } from 'lucide-react';
-import { Separator } from '../ui/separator';
 import { useQuery } from '@tanstack/react-query';
 import { fetchChannels } from '@/http/fetch-channels';
 import { authSlice } from '@/store/auth';
@@ -42,12 +40,7 @@ export const ChannelSidebar = () => {
                   {collapsed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </Button>
               </CollapsibleTrigger>
-              {auth.user.admin && (
-                <>
-                  <Separator orientation="vertical" className="h-4" />
-                  <ChannelForm />
-                </>
-              )}
+
             </div>
 
           </div>

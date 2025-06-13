@@ -2,13 +2,16 @@ import { authSlice } from "@/store/auth"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router"
 
 import { SigninPage } from "@/pages/signin";
-import { HomePage } from "@/pages/home";
+import { Admin } from "@/pages/admin/admin";
 import { ChannelsPage } from "@/pages/channels";
 import PrivateRoute from "./private-route";
 import { AnimatePresence } from 'framer-motion';
 
 import { PageTransition } from "./transition";
 import { Chat } from "@/components/chat";
+import { AdminChannels } from "@/pages/admin/components/admin-channels";
+import { AdminChannelMemberForm } from "@/pages/admin/components/admin-channel-member-form";
+import { AdminChannelMembers } from "@/pages/admin/components/admin-channel-members";
 
 export const IndexRoutes = () => {
   const { auth } = authSlice(state => state)
@@ -25,7 +28,9 @@ export const IndexRoutes = () => {
               <Route
                 path="/channels"
                 element={
-                  <ChannelsPage />
+                  <PageTransition>
+                    <ChannelsPage />
+                  </PageTransition>
                 }
               >
                 <Route
@@ -38,6 +43,35 @@ export const IndexRoutes = () => {
                 />
               </Route>
 
+
+              {auth.user.admin && (
+                <Route
+                  path="/admin"
+                  element={
+                    <PageTransition>
+                      <Admin />
+                    </PageTransition>
+                  }
+                >
+                  <Route
+                    path="/admin/channels"
+                    element={
+                      <PageTransition>
+                        <AdminChannels />
+                      </PageTransition>
+                    }
+                  />
+                  <Route
+                    path="/admin/channels/:slug"
+                    element={<AdminChannelMemberForm />}
+                  >
+                    <Route
+                      path="/admin/channels/:slug/members"
+                      element={<AdminChannelMembers />}
+                    />
+                  </Route>
+                </Route>
+              )}
             </Route>
           )}
           <Route path="*" element={<Navigate to={auth ? '/channels' : '/'} />} />

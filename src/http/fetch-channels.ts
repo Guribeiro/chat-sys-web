@@ -5,6 +5,7 @@ export type Channel = {
   titulo: string
   descricao: string
   slug: string
+  membros_count: number
   criado_em: string
 }
 

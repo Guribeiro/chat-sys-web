@@ -7,7 +7,6 @@ import {
   CardContent,
   CardHeader
 } from '@/components/ui/card';
-import { ChannelMemberForm } from './channel-member-form';
 
 import {
   Collapsible,
@@ -19,7 +18,6 @@ import {
   ChevronUp,
   Users2,
 } from 'lucide-react';
-import { Separator } from '../ui/separator';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchChannelMemebers, Member } from '@/http/fetch-channel-members';
 
@@ -94,12 +92,7 @@ export const ChannelMembersSidebar = () => {
                   {collapsed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </Button>
               </CollapsibleTrigger>
-              {auth.user.admin && (
-                <>
-                  <Separator orientation="vertical" className="h-4" />
-                  <ChannelMemberForm />
-                </>
-              )}
+
             </div>
           </div>
         </CardHeader>
