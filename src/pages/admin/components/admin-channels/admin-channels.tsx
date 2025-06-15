@@ -1,37 +1,49 @@
-
 import { Card, CardContent } from '@/components/ui/card';
 import { Hash } from 'lucide-react';
 import { fetchChannels } from '@/http/fetch-channels';
 import { useQuery } from '@tanstack/react-query';
-
 import { AlertCircleIcon } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useMemo } from 'react';
 import { handleAxiosError } from '@/lib/axios-error-handler';
 import { AdminChannelForm } from '../admin-channel-form';
-import { Outlet } from 'react-router';
 import { AdminChannelCard } from './components/admin-channel-card';
+import { Button } from '@/components/ui/button';
+import { useSearchParams } from 'react-router';
+import { ChannelCardSkeleton } from './components/channel-card-skeleton';
+
+type Status = 'ATIVO' | 'INATIVO' | null
 
 export function AdminChannels() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const status = searchParams.get('status') as Status;
+
   const { data: channels, isFetching, error } = useQuery({
-    queryKey: ['admin', 'channels'],
+    queryKey: ['admin', 'channels', status],
     initialData: [],
     queryFn: async () => {
-      const { data } = await fetchChannels()
+      const { data } = await fetchChannels({ status })
       return data
     },
   })
+
+  const toggleFilter = ({ filterName, filterValue }: { filterName: string, filterValue: string }) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    if (filterValue === 'ALL') {
+      newSearchParams.delete(filterName);
+    } else {
+      newSearchParams.set(filterName, filterValue);
+    }
+
+    setSearchParams(newSearchParams);
+  };
 
   const errorMessage = useMemo(() => {
     if (error) return handleAxiosError(error)
   }, [error])
 
-
-  if (isFetching && !channels.length) {
-    return (
-      <h1>Carregando...</h1>
-    )
-  }
 
   if (error) {
     return (
@@ -61,14 +73,50 @@ export function AdminChannels() {
 
   return (
     <div className='space-y-4 pb-4'>
-      <div className='flex justify-end'>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center space-x-2'>
+          <Button
+            size='sm'
+            variant='ghost'
+            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'ALL' })}
+            className={`border-1 ${!status && 'border-green-500 animate-pulse'} `}
+          >
+            Todos
+          </Button>
+          <Button
+            size='sm'
+            variant='ghost'
+            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'ATIVO' })}
+            className={`border-1 ${status === 'ATIVO' && 'border-green-500 animate-pulse'} `}
+          >
+            Ativos
+          </Button>
+          <Button
+            size='sm'
+            variant='ghost'
+            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'INATIVO' })}
+            className={`border-1 ${status === 'INATIVO' && 'border-green-500 animate-pulse'} `}
+          >
+            Inativos
+          </Button>
+        </div>
         <AdminChannelForm />
       </div>
 
-      <div className="grid gap-2">
-        {channels.map((channel) => <AdminChannelCard key={channel.id} data={channel} />)}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {isFetching && !channels.length ? (
+          <>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <ChannelCardSkeleton key={index} />
+            ))}
+          </>
+        ) : (
+          <>
+            {channels.map((channel) => <AdminChannelCard key={channel.id} data={channel} />)}
+          </>
+        )}
+
       </div>
-      <Outlet />
     </div>
   )
 }

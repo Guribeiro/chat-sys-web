@@ -64,11 +64,11 @@ export const Admin = () => {
           <div className="flex items-center justify-between">
             <div>
               {slug ? (
-                <h1 className="text-md lg:text-3xl font-bold text-foreground mb-2">Membros do canal</h1>
+                <h1 className="text-md lg:text-3xl font-bold text-foreground mb-2">{slugToOriginalText(slug)}</h1>
               ) : (
                 <h1 className="text-md lg:text-3xl font-bold text-foreground mb-2">Canal do administrador</h1>
               )}
-              <p className="text-foreground/50">Gerencie todos os canais e seus membros</p>
+              <p className="text-foreground/50 text-sm lg:text-base">Gerencie todos os canais e seus membros</p>
             </div>
           </div>
         </div>

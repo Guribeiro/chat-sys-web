@@ -104,7 +104,7 @@ export const AdminChannelForm = ({ buttonText = 'Criar canal' }: AdminChannelFor
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button >
+        <Button size='sm'>
           <Plus className="text-foreground w-4 h-4" />
           <p className="text-foreground hidden lg:flex">{buttonText}</p>
         </Button>

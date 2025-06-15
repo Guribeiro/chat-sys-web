@@ -12,7 +12,8 @@ import { Chat } from "@/components/chat";
 import { AdminChannels } from "@/pages/admin/components/admin-channels";
 import { AdminChannelMemberForm } from "@/pages/admin/components/admin-channel-member-form";
 import { AdminChannelMembers } from "@/pages/admin/components/admin-channel-members";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { ChannelDetailsPage } from "@/pages/admin/channel-page/channel-page";
+import { ChannelSettingsPage } from "@/pages/admin/settings-page";
 
 export const IndexRoutes = () => {
   const { auth } = authSlice(state => state)
@@ -49,26 +50,26 @@ export const IndexRoutes = () => {
                 <Route
                   path="/admin"
                   element={
-                    <PageTransition>
-                      <Admin />
-                    </PageTransition>
+                    <Admin />
                   }
                 >
                   <Route
                     path="/admin/channels"
                     element={
-                      <PageTransition>
-                        <AdminChannels />
-                      </PageTransition>
+                      <AdminChannels />
                     }
                   />
                   <Route
                     path="/admin/channels/:slug"
-                    element={<AdminChannelMemberForm />}
+                    element={<ChannelDetailsPage />}
                   >
                     <Route
                       path="/admin/channels/:slug/members"
                       element={<AdminChannelMembers />}
+                    />
+                    <Route
+                      path="/admin/channels/:slug/settings"
+                      element={<ChannelSettingsPage />}
                     />
                   </Route>
                 </Route>

@@ -85,7 +85,7 @@ export const AdminChannelMemberForm = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <div className='flex justify-end'>
           <DialogTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" size='sm'>
               <Plus className="w-4 h-4" />
               <p className='text-foreground hidden lg:flex'>Adicionar membro</p>
             </Button>

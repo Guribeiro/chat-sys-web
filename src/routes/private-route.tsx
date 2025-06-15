@@ -12,7 +12,7 @@ function PrivateRoute() {
   }
 
   return (
-    <div className="min-h-screen max-w-7xl w-full mx-auto bg-background flex flex-col p-2">
+    <div className="min-h-screen max-w-7xl w-full mx-auto bg-background flex flex-col py-2 px-6">
       <Header />
       <main className='mt-4'>
         <Outlet />

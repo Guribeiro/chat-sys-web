@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/popover";
 
 // Define a type for your options to ensure consistency
-interface ComboboxOption {
+export interface ComboboxOption {
   value: string;
   label: string;
 }
@@ -73,7 +73,9 @@ export function Combobox({
                   value={option.value}
                   disabled={disabled}
                   onSelect={(currentValue) => {
-                    onChange(currentValue === value ? "" : currentValue);
+                    if (currentValue !== value) {
+                      onChange(currentValue);
+                    }
                     setOpen(false);
                   }}
                 >
