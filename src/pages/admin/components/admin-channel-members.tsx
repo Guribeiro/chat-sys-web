@@ -1,16 +1,15 @@
+import { useMemo } from "react";
+import { useParams } from "react-router";
 import { ChannelMemberListItem } from "@/pages/admin/components/admin-channel-member-list-item";
 import { Button } from "@/components/ui/button";
 import { fetchChannelMemebers, Member } from "@/http/fetch-channel-members";
-import { Channel } from "@/http/fetch-channels";
 import { handleAxiosError } from "@/lib/axios-error-handler";
-import { authSlice } from "@/store/auth";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { AlertCircleIcon, ArrowLeft, Divide, Loader2, Users, X } from "lucide-react";
-import { useMemo } from "react";
-import { Link, Outlet, useParams } from "react-router";
+import { AlertCircleIcon, Users } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminChannelMemberForm } from "./admin-channel-member-form";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Page = {
   nextPage: number | null
@@ -57,12 +56,6 @@ export function AdminChannelMembers() {
 
   const lastPage = data.pages[data.pages.length - 1]
 
-  if (isFetching && !members.length) {
-    return <div className="flex items-center justify-center bg-opacity-50 rounded-md cursor-not-allowed">
-      <Loader2 className="w-6 h-6 animate-spin" />
-    </div>
-  }
-
   if (errorMessage) {
     return (
       <Alert variant="destructive">
@@ -75,6 +68,16 @@ export function AdminChannelMembers() {
     )
   }
 
+  if (isFetching && !members.length) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-8 w-36" />
+        <div className="space-y-2">
+          <Skeleton className="h-32 w-full" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -117,8 +120,6 @@ export function AdminChannelMembers() {
           </div>
         </CardFooter>
       </Card >
-
-
     </div >
   )
 }

@@ -6,6 +6,10 @@ import { fetchChannel } from "@/http/fetch-channel";
 import { handleAxiosError } from "@/lib/axios-error-handler";
 import { UpdateChannelCard } from "./channel-page/update-channel-card";
 import { DeleteChannelCard } from "./channel-page/delete-channel-card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircleIcon, Loader2 } from "lucide-react";
+
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ChannelSettingsPage() {
   const { slug } = useParams()
@@ -24,12 +28,31 @@ export function ChannelSettingsPage() {
     if (error) return handleAxiosError(error)
   }, [error])
 
-
-  if (isPending) {
+  if (errorMessage) {
     return (
-      <h1>Carregando...</h1>
+      <Alert variant="destructive">
+        <AlertCircleIcon />
+        <AlertTitle>Erro</AlertTitle>
+        <AlertDescription>
+          <p>{errorMessage}</p>
+        </AlertDescription>
+      </Alert>
     )
   }
+
+  if (isPending && !data) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-8 w-36" />
+        <div className="space-y-2">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+      </div>
+    )
+  }
+
 
   return (
     <div className="flex flex-col gap-4">

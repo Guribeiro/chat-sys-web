@@ -45,23 +45,18 @@ export function AdminChannels() {
   }, [error])
 
 
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircleIcon />
-        <AlertTitle>Erro</AlertTitle>
-        <AlertDescription>
-          <p>{errorMessage}</p>
-        </AlertDescription>
-      </Alert>
-    )
-  }
-
-
-
-
   return (
     <div className='space-y-4 pb-4'>
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>Erro</AlertTitle>
+          <AlertDescription>
+            <p>{errorMessage}</p>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className='flex items-center justify-between'>
         <div className='flex items-center space-x-2'>
           <Button

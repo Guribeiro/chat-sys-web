@@ -16,7 +16,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircleIcon, Hash, Trash2Icon } from "lucide-react"
+import { AlertCircleIcon, Hash, Loader2, Trash2Icon } from "lucide-react"
 import { handleAxiosError } from "@/lib/axios-error-handler"
 import { toast } from "sonner"
 import { Channel } from "@/http/fetch-channels"
@@ -46,8 +46,6 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
   const { slug } = useParams()
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const navigate = useNavigate()
-
-  const queryClient = useQueryClient()
 
   const form = useForm<DeleteChannelForm>({
     resolver: zodResolver(deleteChannelForm),
@@ -123,37 +121,42 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
                 </Card>
               </DialogDescription>
             </DialogHeader>
-
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
-                <p className="text-sm text-foreground/50">Para confirmar, digite o nome do canal "{channel.slug}"</p>
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem className='flex w-full flex-col gap-0.5'>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          required
-                          className="focus-visible:ring-0 focus:border-red-500"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  variant="outline"
-                  className="border-red-500 text-red-500 hover:text-red-500"
-                  disabled={title !== channel.slug}
-                  type="submit"
-                >
-                  Excluir este canal
-                </Button>
-              </form>
-            </Form>
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
+                  <p className="text-sm text-foreground/50">Para confirmar, digite o nome do canal "{channel.slug}"</p>
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem className='flex w-full flex-col gap-0.5'>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            required
+                            className="focus-visible:ring-0 focus:border-red-500"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    variant="outline"
+                    className="border-red-500 text-red-500 hover:text-red-500"
+                    disabled={title !== channel.slug}
+                    type="submit"
+                  >
+                    {deleteChannelMutation.isPending ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : 'Excluir este canal'}
+                  </Button>
+                </form>
+              </Form>
+            )}
 
           </DialogContent>
           <div className="flex space-x-2">

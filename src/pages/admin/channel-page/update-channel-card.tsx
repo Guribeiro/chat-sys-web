@@ -87,8 +87,6 @@ export function UpdateChannelCard({ channel, error, loading }: ChannelStatusCard
     }
   }
 
-
-
   if (error) {
     return (
       <Alert variant="destructive">
@@ -105,8 +103,8 @@ export function UpdateChannelCard({ channel, error, loading }: ChannelStatusCard
   return (
     <Card className="bg-background flex flex-col lg:flex-row lg:items-center lg:justify-between">
       <CardHeader>
-        <CardTitle className="text-foreground text-sm lg:text-xl">Alterar Título do canal</CardTitle>
-        <CardDescription className="text-foreground/50 text-xs lg:text-base">Canais inativos ficam invisíveis para todos.</CardDescription>
+        <CardTitle className="text-foreground text-sm lg:text-xl">Renomear canal</CardTitle>
+        <CardDescription className="text-foreground/50 text-xs lg:text-base">Canais podem ser renomeados.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

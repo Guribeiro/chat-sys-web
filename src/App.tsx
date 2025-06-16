@@ -16,7 +16,7 @@ function App() {
           }
 
           else if (error && error.response && error.response.status === 401) {
-            toast.error(error.response.data.message);
+            toast.error(error.response.data.error);
             signout()
           } else {
             toast.error('Something went wrong with fetching data.');
