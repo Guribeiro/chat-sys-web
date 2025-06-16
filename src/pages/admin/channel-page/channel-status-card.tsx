@@ -7,17 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { slugToOriginalText } from "@/lib/utils"
 import { Controller, useForm } from "react-hook-form"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "react-router"
 import { z } from "zod"
-import { fetchChannel } from "@/http/fetch-channel"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon, Loader2 } from "lucide-react"
 import { handleAxiosError } from "@/lib/axios-error-handler"
-import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import { updateChannelStatus } from "@/http/update-channel-status"
 import { Channel } from "@/http/fetch-channels"
@@ -34,21 +30,17 @@ const channelStatusForm = z.object({
 type ChannelStatusForm = z.infer<typeof channelStatusForm>
 
 
-export function ChannelStatusCard() {
+type ChannelStatusCardProps = {
+  channel: Channel
+  loading: boolean
+  error: string | null
+}
+
+export function ChannelStatusCard({ channel, error, loading }: ChannelStatusCardProps) {
   const { slug } = useParams()
   const form = useForm<ChannelStatusForm>()
 
   const queryClient = useQueryClient()
-
-  const { data, isPending, error } = useQuery({
-    queryKey: ['admin', 'channels', slug],
-    enabled: !!slug,
-    queryFn: async () => {
-      const { data } = await fetchChannel({ slug })
-      return data
-    },
-  })
-
 
   const updateChannelStatusMutation = useMutation({
     mutationKey: ['admin', 'channels', slug],
@@ -66,16 +58,6 @@ export function ChannelStatusCard() {
     },
   })
 
-  const errorMessage = useMemo(() => {
-    if (error) return handleAxiosError(error)
-  }, [error])
-
-
-  if (isPending) {
-    return (
-      <h1>Carregando...</h1>
-    )
-  }
 
   if (error) {
     return (
@@ -83,7 +65,7 @@ export function ChannelStatusCard() {
         <AlertCircleIcon />
         <AlertTitle>Erro</AlertTitle>
         <AlertDescription>
-          <p>{errorMessage}</p>
+          <p>{error}</p>
         </AlertDescription>
       </Alert>
     )
@@ -91,31 +73,34 @@ export function ChannelStatusCard() {
 
 
   return (
-    <Card className="bg-background flex items-center justify-between">
+    <Card className="bg-background flex flex-col justify-center lg:flex-row lg:items-center lg:justify-between">
       <CardHeader>
         <CardTitle className="text-foreground text-sm lg:text-xl">Alterar visibilidade do canal</CardTitle>
         <CardDescription className="text-foreground/50 text-xs lg:text-base">Canais inativos ficam invisíveis para todos.</CardDescription>
       </CardHeader>
-      <CardContent>
-        {isPending || updateChannelStatusMutation.isPending ? (
+      <CardContent >
+        {loading || updateChannelStatusMutation.isPending ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
-          <form >
-            <Controller
-              name="status"
-              control={form.control}
-              defaultValue={data.situacao}
-              render={({ field }) => (
-                <Combobox
-                  placeholder="Filtrar status"
-                  buttonPlaceholder="Status"
-                  options={statusOptions}
-                  {...field}
-                  onChange={status => updateChannelStatusMutation.mutate({ status: status as ChannelStatusForm['status'] })}
-                />
-              )}
-            />
-          </form>
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${channel.situacao === 'ATIVO' ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+            <form  >
+              <Controller
+                name="status"
+                control={form.control}
+                defaultValue={channel.situacao}
+                render={({ field }) => (
+                  <Combobox
+                    placeholder="Filtrar status"
+                    buttonPlaceholder="Status"
+                    options={statusOptions}
+                    {...field}
+                    onChange={status => updateChannelStatusMutation.mutate({ status: status as ChannelStatusForm['status'] })}
+                  />
+                )}
+              />
+            </form>
+          </div>
         )}
 
       </CardContent>

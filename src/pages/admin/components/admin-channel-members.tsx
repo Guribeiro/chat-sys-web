@@ -81,43 +81,42 @@ export function AdminChannelMembers() {
       <div className="flex items-baseline justify-between">
         <h3 className="text-xl font-semibold">Membros do canal</h3>
       </div>
-      {!members.length && !isFetching ? (
-        <div className="text-center py-8 text-foreground/50">
-          <Users className="w-6 h-6 text-text-foreground/50 mx-auto mb-3" />
-          <p>Não há membros no canal</p>
-        </div>
-      ) : (
 
-        <Card className="bg-background">
-          <CardHeader>
-            <CardTitle className="flex items-baseline justify-between text-foreground text-sm lg:text-xl">
-              <span className="flex-1">Adicionar membro</span>
-              <AdminChannelMemberForm />
-            </CardTitle>
-            <CardDescription className="text-foreground/50 text-xs lg:text-base">Gerencie os membros do canal</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {members.map((member) => (
-                <ChannelMemberListItem key={member.id} data={member} />
-              ))}
-            </ul>
-          </CardContent>
-          <CardFooter>
-            <div className="w-full flex justify-center">
-              {lastPage?.nextPage && (
-                <Button
-                  variant='outline'
-                  onClick={() => fetchNextPage()}
-                  className='shadow-sm'
-                >
-                  Carregar mais membros
-                </Button>
-              )}
+      <Card className="bg-background">
+        <CardHeader>
+          <CardTitle className="flex items-baseline justify-between text-foreground text-sm lg:text-xl">
+            <span className="flex-1">Adicionar membro</span>
+            <AdminChannelMemberForm />
+          </CardTitle>
+          <CardDescription className="text-foreground/50 text-xs lg:text-base">Gerencie os membros do canal</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!members.length && !isFetching && (
+            <div className="text-center py-8 text-foreground/50">
+              <Users className="w-6 h-6 text-text-foreground/50 mx-auto mb-3" />
+              <p>Não há membros no canal</p>
             </div>
-          </CardFooter>
-        </Card >
-      )}
+          )}
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {members.map((member) => (
+              <ChannelMemberListItem key={member.id} data={member} />
+            ))}
+          </ul>
+        </CardContent>
+        <CardFooter>
+          <div className="w-full flex justify-center">
+            {lastPage?.nextPage && (
+              <Button
+                variant='outline'
+                onClick={() => fetchNextPage()}
+                className='shadow-sm'
+              >
+                Carregar mais membros
+              </Button>
+            )}
+          </div>
+        </CardFooter>
+      </Card >
 
 
     </div >

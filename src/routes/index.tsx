@@ -10,7 +10,6 @@ import { AnimatePresence } from 'framer-motion';
 import { PageTransition } from "./transition";
 import { Chat } from "@/components/chat";
 import { AdminChannels } from "@/pages/admin/components/admin-channels";
-import { AdminChannelMemberForm } from "@/pages/admin/components/admin-channel-member-form";
 import { AdminChannelMembers } from "@/pages/admin/components/admin-channel-members";
 import { ChannelDetailsPage } from "@/pages/admin/channel-page/channel-page";
 import { ChannelSettingsPage } from "@/pages/admin/settings-page";

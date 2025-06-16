@@ -58,18 +58,7 @@ export function AdminChannels() {
   }
 
 
-  if (!channels.length && !isFetching) {
-    return (
-      <Card>
-        <CardContent className="text-center py-12">
-          <Hash className="w-4 h-4 lg:w-8 lg:h-8 text-foreground/50 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-foreground/50 mb-2">Nenhum canal criado</h3>
-          <p className="text-foreground/40 mb-6">Crie seu primeiro canal</p>
-          <AdminChannelForm buttonText='Criar primeiro canal' />
-        </CardContent>
-      </Card>
-    )
-  }
+
 
   return (
     <div className='space-y-4 pb-4'>
@@ -103,7 +92,18 @@ export function AdminChannels() {
         <AdminChannelForm />
       </div>
 
+      {!channels.length && !isFetching && (
+        <Card>
+          <CardContent className="text-center py-12">
+            <Hash className="w-4 h-4 lg:w-8 lg:h-8 text-foreground/50 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground/50 mb-2">Nenhum canal criado</h3>
+            <p className="text-foreground/40 mb-6">Crie seu primeiro canal</p>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+
         {isFetching && !channels.length ? (
           <>
             {Array.from({ length: 3 }).map((_, index) => (

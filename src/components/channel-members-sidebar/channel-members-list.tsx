@@ -3,7 +3,6 @@ import { EmptyIndicator } from "../empty-indicator"
 import { Loader2, AlertCircleIcon } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
-import { ChannelMemberListItem } from "../../pages/admin/components/admin-channel-member-list-item";
 import { MemberItem } from "@/pages/admin/components/member-item";
 
 type ChannelMembersListProps = {
