@@ -1,6 +1,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
 import { Member } from "@/http/fetch-channel-members";
 import { authSlice } from "@/store/auth";
 import { Crown } from "lucide-react";
@@ -23,14 +32,14 @@ export function MemberItem({ data, connected }: MemberItemProps) {
             <img
               src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.member?.name}`}
               alt={data.member.name}
-              className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+              className={`w-8 h-8 rounded-full border-2 ${connected ? 'border-green-500' : 'border-red-500'} shadow-sm `}
             />
+
             <span className={`truncate capitalize ${auth.user.id === data.memberId ? 'text-green-500 animate-pulse' : ''}`}>{data.member.name}</span>
           </div>
-          {/* {data.usuario_adm === 'SIM' && (
+          {data.role === 'ADMIN' && (
             <Crown className="w-4 h-4 text-yellow-500 animate-pulse" />
-          )} */}
-          <div className={`w-3 h-3 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+          )}
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -38,9 +47,9 @@ export function MemberItem({ data, connected }: MemberItemProps) {
           <DialogTitle>Detalhes do membro</DialogTitle>
         </DialogHeader>
         <div className="mt-4 w-full flex flex-col justify-center items-center space-y-2">
-          {/* {data.usuario_adm === 'SIM' && (
+          {data.role === 'ADMIN' && (
             <Crown className="w-4 h-4 text-yellow-500 animate-pulse" />
-          )} */}
+          )}
           <Avatar>
             <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.member.name}`} alt={data.member.name} />
             <AvatarFallback>CN</AvatarFallback>

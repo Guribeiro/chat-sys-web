@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Hash } from 'lucide-react';
-import { fetchChannels } from '@/http/fetch-channels';
+import { fetchChannels, Status } from '@/http/fetch-channels';
 import { useQuery } from '@tanstack/react-query';
 import { AlertCircleIcon } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { useSearchParams } from 'react-router';
 import { ChannelCardSkeleton } from './components/channel-card-skeleton';
 
-type Status = 'ATIVO' | 'INATIVO' | null
 
 export function AdminChannels() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,7 +22,7 @@ export function AdminChannels() {
     queryKey: ['admin', 'channels', status],
     initialData: [],
     queryFn: async () => {
-      const { data } = await fetchChannels({ status })
+      const { data } = await fetchChannels({ status, role: 'ADMIN' })
       return data
     },
   })
@@ -31,7 +30,7 @@ export function AdminChannels() {
   const toggleFilter = ({ filterName, filterValue }: { filterName: string, filterValue: string }) => {
     const newSearchParams = new URLSearchParams(searchParams);
 
-    if (filterValue === 'ALL') {
+    if (filterValue === 'all') {
       newSearchParams.delete(filterName);
     } else {
       newSearchParams.set(filterName, filterValue);
@@ -62,7 +61,7 @@ export function AdminChannels() {
           <Button
             size='sm'
             variant='ghost'
-            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'ALL' })}
+            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'all' })}
             className={`border-1 ${!status && 'border-green-500 animate-pulse'} `}
           >
             Todos
@@ -70,16 +69,16 @@ export function AdminChannels() {
           <Button
             size='sm'
             variant='ghost'
-            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'ATIVO' })}
-            className={`border-1 ${status === 'ATIVO' && 'border-green-500 animate-pulse'} `}
+            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'active' })}
+            className={`border-1 ${status === 'active' && 'border-green-500 animate-pulse'} `}
           >
             Ativos
           </Button>
           <Button
             size='sm'
             variant='ghost'
-            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'INATIVO' })}
-            className={`border-1 ${status === 'INATIVO' && 'border-green-500 animate-pulse'} `}
+            onClick={() => toggleFilter({ filterName: 'status', filterValue: 'deactive' })}
+            className={`border-1 ${status === 'deactive' && 'border-green-500 animate-pulse'} `}
           >
             Inativos
           </Button>

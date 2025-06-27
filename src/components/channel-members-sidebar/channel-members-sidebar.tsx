@@ -54,13 +54,13 @@ export const ChannelMembersSidebar = () => {
   }, [data, connectedUsers]);
 
   useEffect(() => {
-    socket.on('user list update', (data: ConnectedUser[]) => {
+    socket.on('user:list_updated', (data: ConnectedUser[]) => {
       console.log({ data })
       setConnectedUsers(data)
     })
 
     return () => {
-      socket.off('user list update', (data: ConnectedUser[]) => {
+      socket.off('user:list_updated', (data: ConnectedUser[]) => {
         setConnectedUsers(data)
       })
     }

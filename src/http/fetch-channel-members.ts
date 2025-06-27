@@ -1,7 +1,9 @@
 import { api } from "./api-client";
+import { Role } from '@/schemas'
 
 export type Member = {
   id: string
+  role: Role,
   memberId: string
   channelId: string
   createdAt: string | null

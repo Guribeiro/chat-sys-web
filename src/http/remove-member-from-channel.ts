@@ -2,9 +2,9 @@ import { api } from "./api-client";
 
 type Request = {
   slug: string
-  member_id: number
+  member_id: string
 }
 
 export async function removeMemberFromChannel({ slug, member_id }: Request) {
-  return api.delete<void>(`/chat-system/channels/${slug}/members/${member_id}`)
+  return api.delete<void>(`/channels/${slug}/members/${member_id}`)
 }

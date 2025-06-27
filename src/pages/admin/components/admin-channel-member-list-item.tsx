@@ -33,7 +33,7 @@ export function ChannelMemberListItem({ data: member }: ChannelMemberListItemPro
 
   const removeMemberFromChannelMutation = useMutation({
     mutationKey: ['admin', 'channels', 'members', slug],
-    mutationFn: async ({ member_id }: { member_id: number }) => {
+    mutationFn: async ({ member_id }: { member_id: string }) => {
       const { data } = await removeMemberFromChannel({ slug, member_id })
       return data
     },
@@ -57,13 +57,13 @@ export function ChannelMemberListItem({ data: member }: ChannelMemberListItemPro
             <div className={`flex items-center space-x-2 text-sm}`}>
               <div className='flex flex-1 items-center space-x-2'>
                 <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.usuario_nome}`}
-                  alt={member.usuario_nome}
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.member.name}`}
+                  alt={member.member.name}
                   className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
                 />
-                <span className={`truncate capitalize ${auth.user.id === member.usuario_id ? 'text-green-500 animate-pulse' : ''}`}>{member.usuario_nome}</span>
+                <span className={`truncate capitalize ${auth.user.id === member.member.id ? 'text-green-500 animate-pulse' : ''}`}>{member.member.name}</span>
               </div>
-              {member.usuario_adm === 'SIM' && (
+              {member.role === 'ADMIN' && (
                 <Crown className="w-4 h-4 text-yellow-500" />
               )}
             </div>
@@ -71,13 +71,13 @@ export function ChannelMemberListItem({ data: member }: ChannelMemberListItemPro
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Remover do canal</DialogTitle>
-              {auth.user.id === member.usuario_id || member.usuario_adm === 'SIM' ? (
+              {auth.user.id === member.member.id || member.role === 'ADMIN' ? (
                 <DialogDescription>
                   Você não tem permissão para <span className='text-red-500 font-medium'>remover</span> este membro
                 </DialogDescription>
               ) : (
                 <DialogDescription>
-                  Deseja mesmo <span className='text-red-500 font-medium'>remover</span> <strong>{member.usuario_nome}</strong> do canal ?
+                  Deseja mesmo <span className='text-red-500 font-medium'>remover</span> <strong>{member.member.name}</strong> do canal ?
                 </DialogDescription>
               )}
             </DialogHeader>
@@ -89,7 +89,7 @@ export function ChannelMemberListItem({ data: member }: ChannelMemberListItemPro
               <Button
                 variant='destructive'
                 type="submit"
-                disabled={removeMemberFromChannelMutation.isPending || auth.user.id === member.usuario_id || member.usuario_adm === 'SIM'}
+                disabled={removeMemberFromChannelMutation.isPending || auth.user.id === member.member.id || member.role === 'ADMIN'}
                 onClick={() => removeMemberFromChannelMutation.mutate({ member_id: member.id })}
               >
                 {removeMemberFromChannelMutation.isPending ? (

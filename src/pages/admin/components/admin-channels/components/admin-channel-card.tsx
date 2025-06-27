@@ -18,14 +18,14 @@ export function AdminChannelCard({ data: channel }: AdminChannelCardProps) {
               <Hash className="h-3 w-3 text-white" />
             </div>
             <div>
-              <CardTitle className="text-lg capitalize">#{channel.titulo}</CardTitle>
-              {channel.descricao && (
-                <p className="text-sm text-foreground/50 mt-1">{channel.descricao}</p>
+              <CardTitle className="text-lg capitalize">#{channel.title}</CardTitle>
+              {channel.description && (
+                <p className="text-sm text-foreground/50 mt-1">{channel.description}</p>
               )}
             </div>
           </div>
           <div className="flex justify-end">
-            <div className={`w-3 h-3 rounded-full ${channel.situacao === 'ATIVO' ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+            <div className={`w-3 h-3 rounded-full ${channel.active ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
           </div>
 
         </div>
@@ -35,7 +35,7 @@ export function AdminChannelCard({ data: channel }: AdminChannelCardProps) {
           <Button asChild variant='ghost' className='text-foreground'>
             <Link to={`/admin/channels/${channel.slug}/members`}>
               <Users className="w-4 h-4" />
-              <span>{channel.membros_count} membros</span>
+              <span>{channel._count.members} membros</span>
             </Link>
           </Button>
           <Button asChild variant='ghost' className='text-foreground'>

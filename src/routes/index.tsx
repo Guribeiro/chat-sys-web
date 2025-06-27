@@ -44,35 +44,32 @@ export const IndexRoutes = () => {
                 />
               </Route>
 
-
-              {auth.user.admin && (
+              <Route
+                path="/admin"
+                element={
+                  <Admin />
+                }
+              >
                 <Route
-                  path="/admin"
+                  path="/admin/channels"
                   element={
-                    <Admin />
+                    <AdminChannels />
                   }
+                />
+                <Route
+                  path="/admin/channels/:slug"
+                  element={<ChannelDetailsPage />}
                 >
                   <Route
-                    path="/admin/channels"
-                    element={
-                      <AdminChannels />
-                    }
+                    path="/admin/channels/:slug/members"
+                    element={<AdminChannelMembers />}
                   />
                   <Route
-                    path="/admin/channels/:slug"
-                    element={<ChannelDetailsPage />}
-                  >
-                    <Route
-                      path="/admin/channels/:slug/members"
-                      element={<AdminChannelMembers />}
-                    />
-                    <Route
-                      path="/admin/channels/:slug/settings"
-                      element={<ChannelSettingsPage />}
-                    />
-                  </Route>
+                    path="/admin/channels/:slug/settings"
+                    element={<ChannelSettingsPage />}
+                  />
                 </Route>
-              )}
+              </Route>
             </Route>
           )}
           <Route path="*" element={<Navigate to={auth ? '/channels' : '/'} />} />

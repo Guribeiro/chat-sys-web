@@ -3,7 +3,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 
-import ChatFallbackSVG from '@/assets/chat-fallback.svg'
 import { fetchChannelMessages, MessageItem } from '@/http/fetch-channel-messages';
 import { CreateMessageForm } from './create-message-form';
 import { MessagesList } from './messages-list';
@@ -53,7 +52,7 @@ export const Chat = () => {
   useEffect(() => {
     if (!slug) return
 
-    socket.emit('join channel', { channel: slug, user: auth.user });
+    socket.emit('chat:user_joined', { channel: slug, user: auth.user });
 
     // Store the function in a variable
     const handleNewMessage = (message: MessageItem) => {
@@ -61,11 +60,11 @@ export const Chat = () => {
     };
 
     // Attach the listener using the named function
-    socket.on('new message', handleNewMessage);
+    socket.on('channel:send_message', handleNewMessage);
 
     return () => {
-      socket.emit('leave channel', { channel: slug });
-      socket.off('new message', handleNewMessage);
+      socket.emit('chat:user_left', { channel: slug });
+      socket.off('channel:send_message', handleNewMessage);
       setSocketMessages([])
     };
   }, [slug, auth.user]);
