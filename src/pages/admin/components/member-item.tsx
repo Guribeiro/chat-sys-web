@@ -6,12 +6,14 @@ import { authSlice } from "@/store/auth";
 import { Crown } from "lucide-react";
 
 type MemberItemProps = {
-  data: Member;
+  data: Member
+  connected?: boolean
 };
 
 
-export function MemberItem({ data }: MemberItemProps) {
+export function MemberItem({ data, connected }: MemberItemProps) {
   const { auth } = authSlice(state => state)
+
 
   return (
     <Dialog>
@@ -19,15 +21,16 @@ export function MemberItem({ data }: MemberItemProps) {
         <div className={`flex items-center space-x-2 text-sm}`}>
           <div className='flex flex-1 items-center space-x-2'>
             <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.usuario_nome}`}
-              alt={data.usuario_nome}
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.member?.name}`}
+              alt={data.member.name}
               className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
             />
-            <span className={`truncate capitalize ${auth.user.id === data.usuario_id ? 'text-green-500 animate-pulse' : ''}`}>{data.usuario_nome}</span>
+            <span className={`truncate capitalize ${auth.user.id === data.memberId ? 'text-green-500 animate-pulse' : ''}`}>{data.member.name}</span>
           </div>
-          {data.usuario_adm === 'SIM' && (
+          {/* {data.usuario_adm === 'SIM' && (
             <Crown className="w-4 h-4 text-yellow-500 animate-pulse" />
-          )}
+          )} */}
+          <div className={`w-3 h-3 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -35,18 +38,18 @@ export function MemberItem({ data }: MemberItemProps) {
           <DialogTitle>Detalhes do membro</DialogTitle>
         </DialogHeader>
         <div className="mt-4 w-full flex flex-col justify-center items-center space-y-2">
-          {data.usuario_adm === 'SIM' && (
+          {/* {data.usuario_adm === 'SIM' && (
             <Crown className="w-4 h-4 text-yellow-500 animate-pulse" />
-          )}
+          )} */}
           <Avatar>
-            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.usuario_nome}`} alt={data.usuario_nome} />
+            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.member.name}`} alt={data.member.name} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <DialogDescription>
-            {data.usuario_nome}
+            {data.member.name}
           </DialogDescription>
           <DialogDescription>
-            Membro desde:  <span className="text-xs text-foreground/50">{new Date(data.criado_em).toLocaleTimeString([], { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}</span>
+            Membro desde:  <span className="text-xs text-foreground/50">{new Date(data.createdAt).toLocaleTimeString([], { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}</span>
           </DialogDescription>
         </div>
 

@@ -1,14 +1,21 @@
 import { api } from "./api-client";
 
-export type MessageItem = {
-  id: number
-  conteudo: string
-  usuario_id: number
-  usuario_nome: string
-  canal_id: number
-  enviado_em: string
-  enviado_em_formatada: string
+export interface MessageItem {
+  id: string
+  content: string
+  authorId: string
+  channelId: string
+  createdAt: string
+  updatedAt: string
+  author: Author
 }
+
+export interface Author {
+  id: string
+  name: string
+  email: string
+}
+
 
 type Request = {
   slug: string
@@ -22,7 +29,7 @@ export type FetchChannelMessagesResponse = {
 }
 
 export async function fetchChannelMessages({ slug, page = 1 }: Request) {
-  return api.get<FetchChannelMessagesResponse>(`/chat-system/channels/${slug}/messages`, {
+  return api.get<FetchChannelMessagesResponse>(`/channels/${slug}/messages`, {
     params: {
       page
     }

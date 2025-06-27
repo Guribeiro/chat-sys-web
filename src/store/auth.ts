@@ -14,9 +14,9 @@ type Auth = {
   token: string
   user: {
     admin: boolean
-    id: number
-    iddepartamento: number
+    id: string
     name: string
+    email: string
   }
 }
 
@@ -52,12 +52,9 @@ export const authSlice = create<AuthState>()(
     }
   }),
     {
-      name: 'auth-storage', // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => localStorage), // <-- RE-ADD THIS LINE
+      name: 'auth-storage',
+      storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: (state) => {
-        // console.log({ state })
-        // This function runs when the store is rehydrated from storage.
-        // `state` here refers to the state that was loaded from storage.
         return (state, error) => {
           if (error) {
             console.error('An error occurred during rehydration:', error);
@@ -68,8 +65,6 @@ export const authSlice = create<AuthState>()(
           }
 
           return state
-          // Optional: You can do something after rehydration is complete
-          // For example, if you need to ensure some other initial setup happens.
         };
       },
     },

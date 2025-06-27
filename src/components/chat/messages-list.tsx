@@ -76,10 +76,10 @@ export function MessagesList({ messages, error, loading, lastPage, fetchNextPage
           key={message.id}
           message={{
             id: message.id,
-            content: message.conteudo,
-            isCurrentUser: auth.user.id === message.usuario_id,
-            timestamp: new Date(message.enviado_em),
-            username: message.usuario_nome,
+            content: message.content,
+            isCurrentUser: auth.user.id === message.authorId,
+            timestamp: new Date(message.createdAt),
+            username: message.author.name,
           }}
         />
       ))}

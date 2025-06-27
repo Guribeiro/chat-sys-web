@@ -7,7 +7,7 @@ type Request = {
 }
 
 export async function createChannelMessage({ slug, message }: Request) {
-  return api.post<MessageItem>(`/chat-system/channels/${slug}/messages`, {
-    conteudo: message
+  return api.post<MessageItem>(`/channels/${slug}/messages`, {
+    content: message
   })
 }

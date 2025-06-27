@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 
@@ -18,61 +18,62 @@ import {
   ChevronUp,
   Users2,
 } from 'lucide-react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchChannelMemebers, Member } from '@/http/fetch-channel-members';
+import { useQuery } from '@tanstack/react-query';
+import { fetchChannelMemebers } from '@/http/fetch-channel-members';
 
-import { authSlice } from '@/store/auth';
-import { ChannelMembersList } from './channel-members-list';
+import { ChannelMembersList, ConnectedUser, MemberWithConnected } from './channel-members-list';
 import { handleAxiosError } from '@/lib/axios-error-handler';
-
-type Page = {
-  nextPage: number | null
-  previousPage: number | null
-  members: Member[]
-}
+import { socket } from '@/socket';
 
 export const ChannelMembersSidebar = () => {
-  const { auth } = authSlice(state => state)
   const [collapsed, setCollapsed] = useState(false)
   const { slug } = useParams()
 
-  const { data, isFetching, error, fetchNextPage } = useInfiniteQuery({
+  const { data, isFetching, error } = useQuery({
     queryKey: ['members', slug],
     refetchOnWindowFocus: true,
     enabled: !!slug,
-    initialData: {
-      pages: [],
-      pageParams: [],
-    },
-    getNextPageParam: (lastPage: Page) => {
-      if (lastPage.nextPage) return lastPage.nextPage
-      return lastPage.previousPage
-    },
-    initialPageParam: 1,
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await fetchChannelMemebers({ slug, page: pageParam })
+    queryFn: async () => {
+      const { data } = await fetchChannelMemebers({ slug })
       return data
     },
   })
+
+
+  const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
+
+  const members = useMemo<MemberWithConnected[] | undefined>(() => {
+    if (!data) return undefined;
+
+    const connectedUserIds = new Set(connectedUsers.map(user => user.user.id));
+
+    return data.map(member => ({
+      ...member,
+      connected: connectedUserIds.has(member.memberId),
+    }));
+  }, [data, connectedUsers]);
+
+  useEffect(() => {
+    socket.on('user list update', (data: ConnectedUser[]) => {
+      console.log({ data })
+      setConnectedUsers(data)
+    })
+
+    return () => {
+      socket.off('user list update', (data: ConnectedUser[]) => {
+        setConnectedUsers(data)
+      })
+    }
+  }, [connectedUsers])
+
 
   const errorMessage = useMemo(() => {
     if (error) return handleAxiosError(error)
   }, [error])
 
-  const members = useMemo(() => {
-    return data?.pages.flatMap(page => page.members).reverse().map(member => {
-      const [firstName, middleName] = member.usuario_nome.split(' ')
-
-      return {
-        ...member,
-        usuario_nome: `${firstName} ${middleName}`
-      }
-    }) || [];
-  }, [data?.pages])
-
-  const lastPage = data.pages[data.pages.length - 1]
 
   if (!slug) return null
+
 
   return (
     <Card className="h-fit">
@@ -84,7 +85,7 @@ export const ChannelMembersSidebar = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Users2 className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-foreground truncate ">Membros ({members.length})</span>
+              <span className="text-sm font-medium text-foreground truncate ">Membros ({data?.length})</span>
             </div>
             <div className='flex items-center gap-2'>
               <CollapsibleTrigger asChild>
@@ -99,17 +100,6 @@ export const ChannelMembersSidebar = () => {
         <CollapsibleContent>
           <CardContent className=" space-y-1">
             <ChannelMembersList data={members} error={errorMessage} loading={isFetching} />
-            <div className='flex items-center w-full justify-center'>
-              {lastPage?.nextPage && (
-                <Button
-                  variant='outline'
-                  onClick={() => fetchNextPage()}
-                  className='shadow-sm'
-                >
-                  Carregar mais
-                </Button>
-              )}
-            </div>
           </CardContent>
         </CollapsibleContent>
       </Collapsible>

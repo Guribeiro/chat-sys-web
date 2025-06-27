@@ -26,4 +26,4 @@ This project uses environment variables to manage configuration settings, such a
 ### `.env.example`
 ```dotenv
 VITE_APP_TITLE=My App (development)
-VITE_API_URL=http://localhost:2018
+VITE_API_URL=http://localhost:3333

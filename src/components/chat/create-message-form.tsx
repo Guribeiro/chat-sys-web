@@ -31,7 +31,6 @@ type CreateMessageFormProps = {
 
 export function CreateMessageForm({ scrollIntoLastMessage }: CreateMessageFormProps) {
   const { slug } = useParams()
-  const queryClient = useQueryClient()
 
   const form = useForm<CreateMessageForm>({
     defaultValues,
@@ -47,7 +46,6 @@ export function CreateMessageForm({ scrollIntoLastMessage }: CreateMessageFormPr
       return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['channels', slug] });
       form.reset({ message: '' })
       scrollIntoLastMessage()
     },

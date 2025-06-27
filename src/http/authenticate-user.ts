@@ -7,16 +7,16 @@ interface AuthenticateUser {
 
 interface Response {
   user: {
-    id: number
     admin: boolean
+    id: string
     name: string
-    iddepartamento: number
-  },
+    email: string
+  }
   token: string
 }
 
 export async function authenticateUser({ email, password }: AuthenticateUser) {
-  return api.post<Response>('/users/authenticate', {
+  return api.post<Response>('/sessions/password', {
     email,
     password
   })

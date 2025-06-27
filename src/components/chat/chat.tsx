@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
@@ -8,8 +8,9 @@ import { fetchChannelMessages, MessageItem } from '@/http/fetch-channel-messages
 import { CreateMessageForm } from './create-message-form';
 import { MessagesList } from './messages-list';
 import { handleAxiosError } from '@/lib/axios-error-handler';
+import { socket } from '@/socket';
+import { authSlice } from '@/store/auth';
 
-const ONE_MINUTE_IN_MILLISECONDS = 60000;
 
 type Page = {
   nextPage: number | null
@@ -18,13 +19,13 @@ type Page = {
 }
 
 export const Chat = () => {
+  const { auth } = authSlice(state => state)
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { slug } = useParams()
+  const [socketMessages, setSocketMessages] = useState<MessageItem[]>([])
 
   const { data, isFetching, error, fetchNextPage } = useInfiniteQuery({
     queryKey: ['channels', slug],
-    refetchInterval: ONE_MINUTE_IN_MILLISECONDS,
-    refetchOnWindowFocus: true,
     enabled: !!slug,
     initialData: {
       pages: [],
@@ -37,6 +38,7 @@ export const Chat = () => {
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await fetchChannelMessages({ slug, page: pageParam })
+      console.log(data)
       return data
     },
   })
@@ -45,9 +47,38 @@ export const Chat = () => {
     if (error) return handleAxiosError(error)
   }, [error])
 
-  const messages = data?.pages.flatMap(page => page.messages).reverse() || [];
 
   const lastPage = data.pages[data.pages.length - 1]
+
+  useEffect(() => {
+    if (!slug) return
+
+    socket.emit('join channel', { channel: slug, user: auth.user });
+
+    // Store the function in a variable
+    const handleNewMessage = (message: MessageItem) => {
+      setSocketMessages((prevMessages) => [...prevMessages, message]);
+    };
+
+    // Attach the listener using the named function
+    socket.on('new message', handleNewMessage);
+
+    return () => {
+      socket.emit('leave channel', { channel: slug });
+      socket.off('new message', handleNewMessage);
+      setSocketMessages([])
+    };
+  }, [slug, auth.user]);
+
+
+  const allMessages = useMemo(() => {
+    const fetchedMessages = data?.pages.flatMap(page => page.messages) || [];
+
+    const combined = [...fetchedMessages, ...socketMessages];
+    return combined;
+
+  }, [data?.pages, socketMessages])
+
 
   return (
     <div className="w-full ">
@@ -56,7 +87,7 @@ export const Chat = () => {
           <Card className="lg:col-span-4 flex flex-col h-[600px]">
             <CardContent className="flex-1 overflow-y-auto p-4 space-y-1">
               <MessagesList
-                messages={messages}
+                messages={allMessages}
                 error={errorMessage}
                 loading={isFetching}
                 lastPage={lastPage}

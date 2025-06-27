@@ -15,7 +15,7 @@ export const ChannelSidebar = () => {
   const { data, isFetching, error } = useQuery({
     queryKey: ['channels'],
     queryFn: async () => {
-      const { data } = await fetchChannels({ status: 'ATIVO' })
+      const { data } = await fetchChannels()
       return data
     },
   })

@@ -2,7 +2,7 @@
 import React from 'react';
 
 export interface MessageType {
-  id: number;
+  id: string;
   username: string;
   content: string;
   timestamp: Date;

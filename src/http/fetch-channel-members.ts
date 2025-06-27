@@ -1,18 +1,19 @@
 import { api } from "./api-client";
 
 export type Member = {
-  id: number
-  usuario_id: number
-  usuario_nome: string
-  usuario_adm: string | null
-  canal_id: number
-  criado_em: string
-  criado_em_formatada: string
+  id: string
+  memberId: string
+  channelId: string
+  createdAt: string | null
+  member: {
+    id: string
+    name: string
+    email: string
+  }
 }
 
 type Request = {
   slug: string
-  page?: number
 }
 
 export type FetchChannelMembersResponse = {
@@ -21,10 +22,6 @@ export type FetchChannelMembersResponse = {
   previousPage: number | null
 }
 
-export async function fetchChannelMemebers({ slug, page = 1 }: Request) {
-  return api.get<FetchChannelMembersResponse>(`/chat-system/channels/${slug}/members`, {
-    params: {
-      page
-    }
-  })
+export async function fetchChannelMemebers({ slug }: Request) {
+  return api.get<Member[]>(`/channels/${slug}/members`)
 }
