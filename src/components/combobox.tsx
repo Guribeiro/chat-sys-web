@@ -45,7 +45,6 @@ export function Combobox({
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
-  // Find the selected label based on the current value
   const selectedLabel = options.find((option) => option.value === value)?.label;
 
   return (

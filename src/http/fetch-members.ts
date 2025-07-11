@@ -1,10 +1,11 @@
 import { api } from "./api-client";
 
-type Member = {
-  id: number
-  nome: string
+type User = {
+  id: string
+  name: string
+  email: string
 }
 
 export async function fetchMembers() {
-  return api.get<Member[]>('/chat-system/members')
+  return api.get<User[]>('/users')
 }

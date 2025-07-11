@@ -15,7 +15,7 @@ export function MembersCombobox({ value, onChange, placeholder, buttonPlaceholde
     },
   })
 
-  const options = data.map(item => ({ value: `${item.nome}-${String(item.id)}`, label: item.nome }))
+  const options = data.map(item => ({ value: `${item.name}/${String(item.id)}`, label: item.name }))
 
   return (
     <div>

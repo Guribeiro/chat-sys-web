@@ -1,16 +1,19 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { Check, UserPlus2, X } from 'lucide-react'
+import { Check, Loader, UserPlus2, X } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { getPendingInvites } from '@/http/get-pending-invites'
+import { useEffect, useState } from 'react'
+import { getPendingInvites, Invite } from '@/http/get-pending-invites'
 import { useParams } from 'react-router'
 import { acceptInvite } from '@/http/accept-invite'
 import { rejectInvite } from '@/http/reject-invite'
 import { toast } from 'sonner'
+import { socket } from '@/socket';
+import { Badge } from '../ui/badge'
+
 
 dayjs.extend(relativeTime)
 
@@ -24,6 +27,7 @@ export function PendingInvites() {
   const { slug } = useParams()
   const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
+  const [pendingInvites, setPendingInvites] = useState<Invite[]>([])
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['pending-invites'],
@@ -58,6 +62,7 @@ export function PendingInvites() {
         toast.success('Convite recusado com sucesso!')
       }
 
+
       if (data?.length === 1) {
         setIsOpen(false);
       }
@@ -81,21 +86,52 @@ export function PendingInvites() {
     handleInviteActionMutation.mutate({ inviteId, action: 'reject' })
   }
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open)
+    setPendingInvites([])
+  }
+
+
+  useEffect(() => {
+    socket.on('notification:new_invite', (invite: Invite) => {
+      setPendingInvites((prevInvites) => [...prevInvites, invite])
+    })
+
+    return () => {
+      socket.off('notification:new_invite', (invite: Invite) => {
+        setPendingInvites((prevInvites) => [...prevInvites, invite])
+      })
+    }
+  }, [])
+
+
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button size="icon" variant="ghost">
-          <UserPlus2 className="size-4" />
-          <span className="sr-only">Pending invites</span>
+          <div className='relative'>
+            {pendingInvites.length > 0 && (
+              <Badge className='absolute bottom-3.5 left-2' >
+                {pendingInvites.length}
+              </Badge>
+            )}
+            <UserPlus2 className="size-4" />
+            <span className="sr-only">Pending invites</span>
+          </div>
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-80 space-y-2">
+
+
         <span className="block text-sm font-medium">
           Pending Invites ({data?.length ?? 0})
         </span>
 
-        {data?.length === 0 && (
+        {isLoading && <Loader className='animate-spin' />}
+
+        {data?.length === 0 && !isLoading && (
           <p className="text-sm text-muted-foreground">No invites found.</p>
         )}
 

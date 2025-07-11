@@ -27,15 +27,19 @@ import { Button } from '../../../components/ui/button';
 import { createChannelMember } from '@/http/create-channel-member';
 import { MembersCombobox } from '../../../components/channel-members-sidebar/members-combobox';
 import { handleAxiosError } from '@/lib/axios-error-handler';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { createChannelInvite } from '@/http/create-channel-invite';
+import { roleSchema } from '@/schemas';
 
 const createChannelMemberFormSchema = z.object({
-  member_id: z.string().min(1, 'Adicione um titulo para o canal'),
+  invitee_id: z.string().min(1, 'Adicione um titulo para o canal'),
+  role: roleSchema
 })
 
 type CreateChannelMemberForm = z.infer<typeof createChannelMemberFormSchema>
 
 const defaultValues: CreateChannelMemberForm = {
-  member_id: undefined
+  invitee_id: undefined
 }
 
 export const AdminChannelMemberForm = () => {
@@ -51,10 +55,10 @@ export const AdminChannelMemberForm = () => {
     defaultValues
   })
 
-  const createChannelMutation = useMutation({
+  const createInvite = useMutation({
     mutationKey: ['admin', 'channels', 'members', slug],
-    mutationFn: async ({ member_id }: CreateChannelMemberForm) => {
-      const { data } = await createChannelMember({ slug, member_id })
+    mutationFn: async ({ invitee_id, role }: CreateChannelMemberForm) => {
+      const { data } = await createChannelInvite({ slug, invitee_id, role })
       return data
     },
     onSuccess: () => {
@@ -64,14 +68,14 @@ export const AdminChannelMemberForm = () => {
     },
     onError: (error) => {
       const errorMessage = handleAxiosError(error)
-      form.setValue('member_id', undefined)
-      form.setError('member_id', { message: errorMessage })
+      form.setValue('invitee_id', undefined)
+      form.setError('invitee_id', { message: errorMessage })
     },
   })
 
-  const handleCreateChannel = ({ member_id }: CreateChannelMemberForm) => {
-    const [, id] = member_id.split('-')
-    createChannelMutation.mutate({ member_id: id })
+  const handleCreateInvite = ({ invitee_id, role }: CreateChannelMemberForm) => {
+    const [, id] = invitee_id.split('/')
+    createInvite.mutate({ invitee_id: id, role })
   };
 
   const handleCancelCreatingChannel = () => {
@@ -87,27 +91,54 @@ export const AdminChannelMemberForm = () => {
           <DialogTrigger asChild>
             <Button variant="outline" size='sm'>
               <Plus className="w-4 h-4" />
-              <p className='text-foreground hidden lg:flex'>Adicionar membro</p>
+              <p className='text-foreground hidden lg:flex'>Convidar membro</p>
             </Button>
           </DialogTrigger>
         </div>
-        <DialogContent aria-describedby='create-channel-dialog' aria-description='Adicionar membro'>
+        <DialogContent aria-describedby='create-channel-dialog' aria-description='Convidar membro'>
           <DialogHeader>
-            <DialogTitle>Adicionar membro</DialogTitle>
+            <DialogTitle>Convidar membro</DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleCreateChannel)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(handleCreateInvite)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="member_id"
+                name="invitee_id"
                 render={({ field }) => (
                   <FormItem className='flex flex-col gap-0.5'>
-                    <FormLabel className="text-sm font-medium text-foreground">Selecione um membro</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">Select a member</FormLabel>
                     <FormControl>
                       <MembersCombobox
-                        placeholder="Exemplo: Produção"
+                        placeholder="Buscar usuário..."
                         {...field}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className='flex flex-col gap-0.5'>
+                    <FormLabel className="text-sm font-medium text-foreground">Select the member role</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <SelectTrigger >
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup >
+                            <SelectItem value="ADMIN">Admin</SelectItem>
+                            <SelectItem value="MEMBER">Member</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,12 +149,12 @@ export const AdminChannelMemberForm = () => {
                 <Button
                   type="submit"
                   className="flex-1 text-foreground active:bg-primary/60"
-                  disabled={createChannelMutation.isPending}
+                  disabled={createInvite.isPending}
                 >
-                  {createChannelMutation.isPending ? (
+                  {createInvite.isPending ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
                   ) : (
-                    'Adicionar membro'
+                    'Convidar membro'
                   )}
 
                 </Button>
