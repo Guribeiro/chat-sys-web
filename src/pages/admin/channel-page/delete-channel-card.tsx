@@ -59,7 +59,7 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
       const { data } = await deleteChannel({ slug })
       return data
     },
-    onSuccess: (data: Channel) => {
+    onSuccess: () => {
       toast.success('Canal excluído com sucesso')
       handleCancelCreatingChannel()
     },
@@ -96,7 +96,7 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
     <Card className="bg-background border-red-500 flex flex-col lg:flex-row lg:items-center lg:justify-between">
       <CardHeader>
         <CardTitle className="text-red-500 text-sm lg:text-xl">Excluir canal</CardTitle>
-        <CardDescription className="text-red-500 text-xs lg:text-base">O canal e todos os membros e mensagens serão permanentemente excluídos.</CardDescription>
+        <CardDescription className="text-red-500 text-xs lg:text-base">O canal, todos os membros e mensagens serão permanentemente excluídos.</CardDescription>
       </CardHeader>
       <CardContent>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -111,9 +111,9 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
                         <Hash className="h-3 w-3 text-white" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg capitalize">#{channel.titulo}</CardTitle>
-                        {channel.descricao && (
-                          <p className="text-sm text-foreground/50 mt-1">{channel.descricao}</p>
+                        <CardTitle className="text-lg capitalize">#{channel.title}</CardTitle>
+                        {channel.description && (
+                          <p className="text-sm text-foreground/50 mt-1">{channel.description}</p>
                         )}
                       </div>
                     </div>

@@ -7,7 +7,7 @@ import { handleAxiosError } from "@/lib/axios-error-handler";
 import { UpdateChannelCard } from "./channel-page/update-channel-card";
 import { DeleteChannelCard } from "./channel-page/delete-channel-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon, Loader2 } from "lucide-react";
+import { AlertCircleIcon } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 

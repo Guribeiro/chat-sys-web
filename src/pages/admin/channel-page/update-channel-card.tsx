@@ -46,8 +46,8 @@ export function UpdateChannelCard({ channel, error, loading }: ChannelStatusCard
 
   const form = useForm<ChannelTitleForm>({
     defaultValues: {
-      title: channel.titulo,
-      description: channel.descricao
+      title: channel.title,
+      description: channel.description
     }
   })
 
@@ -57,12 +57,13 @@ export function UpdateChannelCard({ channel, error, loading }: ChannelStatusCard
   const updateChannelMutation = useMutation({
     mutationKey: ['admin', 'channels', slug],
     mutationFn: async ({ title, description }: ChannelTitleForm) => {
+      console.log({ title, description })
       const { data } = await updateChannel({ slug, title, description })
       return data
     },
     onSuccess: (data: Channel) => {
-      form.setValue('title', data.titulo)
-      form.setValue('description', data.descricao)
+      form.setValue('title', data.title)
+      form.setValue('description', data.description)
 
       toast.success('Canal atualizado com sucesso')
 
@@ -119,7 +120,7 @@ export function UpdateChannelCard({ channel, error, loading }: ChannelStatusCard
                       type="text"
                       required
                       placeholder="Exemplo: Produção"
-                      defaultValue={channel.titulo}
+                      defaultValue={channel.title}
                       {...field}
                     />
                   </FormControl>
@@ -136,7 +137,7 @@ export function UpdateChannelCard({ channel, error, loading }: ChannelStatusCard
                     <Input
                       type="text"
                       placeholder="Sobre o que é esse canal?"
-                      defaultValue={channel.descricao}
+                      defaultValue={channel.description}
                       {...field}
                     />
                   </FormControl>

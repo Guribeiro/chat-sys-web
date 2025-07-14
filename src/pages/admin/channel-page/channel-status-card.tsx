@@ -1,5 +1,4 @@
 import { Combobox, ComboboxOption } from "@/components/combobox"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -50,7 +49,9 @@ export function ChannelStatusCard({ channel, error, loading }: ChannelStatusCard
     },
     onSuccess: (data: Channel) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'channels', slug], });
-      form.setValue('status', data.situacao)
+      console.log({ data })
+      form.setValue('status', data.active ? 'ATIVO' : 'INATIVO')
+      toast.success('Canal atualizado com sucesso')
     },
     onError: (error) => {
       const errorMessage = handleAxiosError(error)
@@ -83,12 +84,12 @@ export function ChannelStatusCard({ channel, error, loading }: ChannelStatusCard
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${channel.situacao === 'ATIVO' ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+            <div className={`w-3 h-3 rounded-full ${channel.active ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
             <form  >
               <Controller
                 name="status"
                 control={form.control}
-                defaultValue={channel.situacao}
+                defaultValue={channel.active ? 'ATIVO' : 'INATIVO'}
                 render={({ field }) => (
                   <Combobox
                     placeholder="Filtrar status"

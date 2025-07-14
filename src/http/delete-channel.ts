@@ -6,5 +6,5 @@ type Request = {
 }
 
 export async function deleteChannel({ slug }: Request) {
-  return api.delete<Channel>(`/chat-system/channels/${slug}`)
+  return api.delete<Channel>(`/channels/${slug}`)
 }

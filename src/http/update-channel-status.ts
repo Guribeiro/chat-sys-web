@@ -7,7 +7,7 @@ type Request = {
 }
 
 export async function updateChannelStatus({ slug, status }: Request) {
-  return api.patch<Channel>(`/chat-system/channels/${slug}/status`, {
-    situacao: status
+  return api.patch<Channel>(`/channels/${slug}/active`, {
+    status
   })
 }
