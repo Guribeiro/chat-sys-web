@@ -2,6 +2,7 @@ import { authSlice } from "@/store/auth"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router"
 
 import { SigninPage } from "@/pages/signin";
+import { ForgotPassword } from "@/pages/forgot-password";
 import { Admin } from "@/pages/admin/admin";
 import { ChannelsPage } from "@/pages/channels";
 import PrivateRoute from "./private-route";
@@ -13,6 +14,7 @@ import { AdminChannels } from "@/pages/admin/components/admin-channels";
 import { AdminChannelMembers } from "@/pages/admin/components/admin-channel-members";
 import { ChannelDetailsPage } from "@/pages/admin/channel-page/channel-page";
 import { ChannelSettingsPage } from "@/pages/admin/settings-page";
+import { ResetPassword } from "@/pages/reset-password";
 
 export const IndexRoutes = () => {
   const { auth } = authSlice(state => state)
@@ -21,7 +23,11 @@ export const IndexRoutes = () => {
       <BrowserRouter>
         <Routes>
           {!auth ? (
-            <Route path="/" element={<SigninPage />} />
+            <Route>
+              <Route path="/" element={<SigninPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:code" element={<ResetPassword />} />
+            </Route>
           ) : (
             <Route
               element={<PrivateRoute />}

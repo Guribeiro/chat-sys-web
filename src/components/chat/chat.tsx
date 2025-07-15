@@ -37,7 +37,6 @@ export const Chat = () => {
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await fetchChannelMessages({ slug, page: pageParam })
-      console.log(data)
       return data
     },
   })

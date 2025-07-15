@@ -2,41 +2,59 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { authSlice } from "@/store/auth"
 import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from 'zod'
 
-import logo from '@/assets/logo.png'
-
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createElement, useState } from "react"
-import { Link } from "react-router"
+import { Link, useNavigate, useParams } from "react-router"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { handleAxiosError } from "@/lib/axios-error-handler"
+import { resetPassword } from "@/http/reset-password"
 
-const formSchema = z.object({
-  email: z.string().min(1, 'Informe seu usuário'),
+const resetPasswordSchema = z.object({
   password: z
     .string()
     .min(3, { message: 'Informe sua senha' })
 })
 
-export const SigninPage = () => {
-  const { loading, signin } = authSlice(state => state)
+type ResetPasswordForm = z.infer<typeof resetPasswordSchema>
+
+export const ResetPassword = () => {
 
   const [passwordVisibility, setPasswordVisibility] = useState(false)
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { code } = useParams()
+  const navigate = useNavigate()
+
+  const form = useForm<ResetPasswordForm>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: '',
       password: '',
     },
   })
 
-  async function onSubmit({ email, password }: z.infer<typeof formSchema>) {
-    signin({
-      email,
-      password
+  const resetPasswordMutation = useMutation({
+    mutationKey: ['reset-password', code],
+    mutationFn: async ({ password }: ResetPasswordForm) => {
+      // await requestPasswordRecover({ email })
+      await resetPassword({ password, code })
+    },
+    onSuccess: () => {
+      toast.success('Your password has been successfully reset. You can now log in with your new password.')
+      navigate('/signin')
+    },
+    onError: (error) => {
+      const errorMessage = handleAxiosError(error)
+      toast.error(errorMessage)
+    }
+  })
+
+  async function onSubmit({ password }: ResetPasswordForm) {
+    resetPasswordMutation.mutate({
+      password,
     })
   }
 
@@ -48,32 +66,15 @@ export const SigninPage = () => {
           <span className='text-muted-foreground text-2xl font-medium'>Realtime chat</span>
         </div>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Reset password</CardTitle>
           <CardDescription>
-            Preencha com seu usuário e senha para acessar sua conta.
+            Preencha com a sua nova senha.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="grid gap-2">
-                      <FormLabel htmlFor="email">Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="email"
-                          autoComplete="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="password"
@@ -106,7 +107,7 @@ export const SigninPage = () => {
                   )}
                 />
                 <Button type="submit" className="w-full">
-                  {loading ? <Loader2 className="animate-spin" /> : 'Login'}
+                  {resetPasswordMutation.isPending ? <Loader2 className="animate-spin" /> : 'Login'}
                 </Button>
                 <Button asChild variant="link">
                   <Link
