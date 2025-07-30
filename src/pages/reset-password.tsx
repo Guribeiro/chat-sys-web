@@ -61,7 +61,6 @@ export const ResetPassword = () => {
   return (
     <div className="bg-gradient-to-b from-primary to-secondary flex flex-col min-h-screen justify-center h-full w-full px-4">
       <Card className="mx-auto max-w-md w-full py-6">
-        {/* <img src={logo} className="w-52 m-auto" alt="Sorocaps" /> */}
         <div className="text-center">
           <span className='text-muted-foreground text-2xl font-medium'>Realtime chat</span>
         </div>
@@ -107,7 +106,7 @@ export const ResetPassword = () => {
                   )}
                 />
                 <Button type="submit" className="w-full">
-                  {resetPasswordMutation.isPending ? <Loader2 className="animate-spin" /> : 'Login'}
+                  {resetPasswordMutation.isPending ? <Loader2 className="animate-spin" /> : 'Enviar'}
                 </Button>
                 <Button asChild variant="link">
                   <Link

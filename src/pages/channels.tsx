@@ -57,7 +57,7 @@ export function ChannelsPage() {
           <Card className="flex justify-center items-center h-[600px]">
             <CardContent className="text-center">
               <Hash className="w-12 h-12 text-green-500 mx-auto mb-4" />
-              <h2 className="text-md lg:text-xl font-semibold text-foreground mb-2">Bem vindo(a) ao Canal de Comunicação da <span className="text-primary">Sorocaps</span></h2>
+              <h2 className="text-md lg:text-xl font-semibold text-foreground mb-2">Bem vindo(a) ao Canal de Comunicação da <span className="text-primary">Realtime chat</span></h2>
               <p className="text-muted-foreground">Selecione um canal para começar a conversar!</p>
             </CardContent>
           </Card>

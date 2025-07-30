@@ -54,7 +54,7 @@ export const ForgotPassword = () => {
   return (
     <div className="bg-gradient-to-b from-primary to-secondary flex flex-col min-h-screen justify-center h-full w-full px-4">
       <Card className="mx-auto max-w-md w-full py-6">
-        <img src={logo} className="w-52 m-auto" alt="Sorocaps" />
+        <img src={logo} className="w-52 m-auto" alt="Realtime chat" />
         <CardHeader>
           <CardTitle className="text-2xl">Esqueci minha senha</CardTitle>
           <CardDescription>
