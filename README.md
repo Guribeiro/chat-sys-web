@@ -8,16 +8,17 @@ A real-time chat application built with React, TypeScript, and a modern tech sta
 
 ## Table of Contents
 
-- [About The Project](#about-the-project)
-- [Built With](#built-with)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Available Scripts](#available-scripts)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [Sistema de Chats](#sistema-de-chats)
+  - [Table of Contents](#table-of-contents)
+  - [About The Project](#about-the-project)
+    - [Features](#features)
+  - [Built With](#built-with)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Contact](#contact)
 
 ## About The Project
 
@@ -61,7 +62,7 @@ Make sure you have the following software installed on your machine:
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username/your_project_name.git
+   git clone https://github.com/Guribeiro/chat-sys-web.git
    ```
 2. Install NPM packages
    ```sh
@@ -166,6 +167,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_twitter) - email@example.com
+Gustavo Ribeiro - [@guribeir](https://twitter.com/guribeir) - guribeirodeveloper@gmail.com
 
-Project Link: [https://github.com/your_username/your_project_name](https://github.com/your_username/your_project_name)
+Project Link: [https://github.com/Guribeiro/chat-sys-web](https://github.com/Guribeiro/chat-sys-web)
