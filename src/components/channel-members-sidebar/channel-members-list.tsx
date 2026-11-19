@@ -4,8 +4,6 @@ import { Loader2, AlertCircleIcon } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 import { MemberItem } from "@/pages/admin/components/member-item";
-import { useEffect, useState } from "react";
-import { socket } from "@/socket";
 
 export type MemberWithConnected = Member & {
   connected: boolean
@@ -17,30 +15,8 @@ type ChannelMembersListProps = {
   error?: string
 }
 
-export type ConnectedUser = {
-  id: string
-  user: {
-    id: string
-    name: string
-    email: string
-  }
-}
-
 export function ChannelMembersList({ data, error, loading }: ChannelMembersListProps) {
-  const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
 
-
-  useEffect(() => {
-    socket.on('user:list_updated', (data: ConnectedUser[]) => {
-      setConnectedUsers(data)
-    })
-
-    return () => {
-      socket.off('user:list_updated', (data: ConnectedUser[]) => {
-        setConnectedUsers(data)
-      })
-    }
-  }, [connectedUsers])
 
 
   if (loading) {

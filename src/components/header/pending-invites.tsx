@@ -93,14 +93,16 @@ export function PendingInvites() {
 
 
   useEffect(() => {
-    socket.on('notification:new_invite', (invite: Invite) => {
-      setPendingInvites((prevInvites) => [...prevInvites, invite])
-    })
+    const handleNewInvite = ({ invite }: { invite: Invite }) => {
+      setPendingInvites((prevInvites) =>
+        prevInvites.some(item => item.id === invite.id) ? prevInvites : [...prevInvites, invite]
+      )
+    }
+
+    socket.on('notification:new_invite', handleNewInvite)
 
     return () => {
-      socket.off('notification:new_invite', (invite: Invite) => {
-        setPendingInvites((prevInvites) => [...prevInvites, invite])
-      })
+      socket.off('notification:new_invite', handleNewInvite)
     }
   }, [])
 

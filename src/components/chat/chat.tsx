@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router';
+import { toast } from 'sonner';
 
 import { fetchChannelMessages, MessageItem } from '@/http/fetch-channel-messages';
 import { CreateMessageForm } from './create-message-form';
@@ -21,6 +22,9 @@ export const Chat = () => {
   const { auth } = authSlice(state => state)
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { slug } = useParams()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const channelIdRef = useRef<string | null>(null)
   const [socketMessages, setSocketMessages] = useState<MessageItem[]>([])
 
   const { data, isFetching, error, fetchNextPage } = useInfiniteQuery({
@@ -51,29 +55,81 @@ export const Chat = () => {
   useEffect(() => {
     if (!slug) return
 
-    socket.emit('chat:user_joined', { channel: slug, user: auth.user });
+    const join = () => {
+      socket.emit('channel:join', { slug }, (response) => {
+        if ('error' in response) toast.error(response.error)
+        else channelIdRef.current = response.channelId
+      })
+    }
 
-    // Store the function in a variable
-    const handleNewMessage = (message: MessageItem) => {
-      setSocketMessages((prevMessages) => [...prevMessages, message]);
+    // Ignore late events from a channel we already left
+    const isCurrentChannel = (channelId: string) => channelIdRef.current === channelId
+
+    const handleNewMessage = ({ channelId, message }: { channelId: string; message: MessageItem }) => {
+      if (!isCurrentChannel(channelId)) return
+      setSocketMessages((prev) => (prev.some(item => item.id === message.id) ? prev : [...prev, message]));
     };
 
-    // Attach the listener using the named function
-    socket.on('channel:send_message', handleNewMessage);
+    const handleMemberRemoved = ({ channelId, userId }: { channelId: string; userId: string }) => {
+      if (!isCurrentChannel(channelId)) return
+      if (userId === auth?.user?.id) {
+        toast.warning('Você foi removido deste canal')
+        navigate('/channels')
+        return
+      }
+      queryClient.invalidateQueries({ queryKey: ['members', slug] })
+    }
+
+    const handleMemberAdded = ({ channelId }: { channelId: string }) => {
+      if (!isCurrentChannel(channelId)) return
+      queryClient.invalidateQueries({ queryKey: ['members', slug] })
+    }
+
+    const handleChannelDeleted = ({ channelId }: { channelId: string }) => {
+      if (!isCurrentChannel(channelId)) return
+      toast.warning('Este canal foi removido')
+      navigate('/channels')
+    }
+
+    const handleChannelUpdated = (payload: { channelId: string; slug: string; active: boolean }) => {
+      if (!isCurrentChannel(payload.channelId)) return
+      queryClient.invalidateQueries({ queryKey: ['channels'] })
+      if (payload.slug !== slug) navigate(`/channels/${payload.slug}`, { replace: true })
+    }
+
+    join()
+    // Rooms are lost when the connection drops: join again after reconnecting
+    socket.on('connect', join)
+    socket.on('channel:message', handleNewMessage);
+    socket.on('channel:member_removed', handleMemberRemoved)
+    socket.on('channel:member_added', handleMemberAdded)
+    socket.on('channel:deleted', handleChannelDeleted)
+    socket.on('channel:updated', handleChannelUpdated)
 
     return () => {
-      socket.emit('chat:user_left', { channel: slug });
-      socket.off('channel:send_message', handleNewMessage);
+      socket.emit('channel:leave', { slug });
+      socket.off('connect', join)
+      socket.off('channel:message', handleNewMessage);
+      socket.off('channel:member_removed', handleMemberRemoved)
+      socket.off('channel:member_added', handleMemberAdded)
+      socket.off('channel:deleted', handleChannelDeleted)
+      socket.off('channel:updated', handleChannelUpdated)
+      channelIdRef.current = null
       setSocketMessages([])
     };
-  }, [slug, auth.user]);
+  }, [slug, auth?.user?.id, navigate, queryClient]);
 
 
   const allMessages = useMemo(() => {
     const fetchedMessages = data?.pages.flatMap(page => page.messages) || [];
 
-    const combined = [...fetchedMessages, ...socketMessages];
-    return combined;
+    // Deduplicate by id: a message may come both from the HTTP fetch and from the socket
+    const seen = new Set<string>()
+    return [...fetchedMessages, ...socketMessages].filter(message => {
+      if (seen.has(message.id)) return false
+      seen.add(message.id)
+      return true
+    })
 
   }, [data?.pages, socketMessages])
 
