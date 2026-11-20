@@ -1,12 +1,13 @@
 import { api } from "./api-client";
 
-type User = {
+export type WorkspaceUser = {
   id: string
   name: string
   email: string
   avatarUrl?: string | null
 }
 
-export async function fetchMembers() {
-  return api.get<User[]>('/users')
+/** Workspace users; `q` matches name or e-mail on the server. */
+export async function fetchMembers({ q, limit }: { q?: string; limit?: number } = {}) {
+  return api.get<WorkspaceUser[]>('/users', { params: { q: q || undefined, limit } })
 }

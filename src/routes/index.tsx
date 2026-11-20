@@ -1,5 +1,5 @@
 import { authSlice } from "@/store/auth"
-import { BrowserRouter, Navigate, Route, Routes } from "react-router"
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router"
 
 import { SigninPage } from "@/pages/signin";
 import { SignupPage } from "@/pages/signup";
@@ -12,11 +12,18 @@ import { AnimatePresence } from 'framer-motion';
 import { PageTransition } from "./transition";
 import { Chat } from "@/components/chat";
 import { AdminChannels } from "@/pages/admin/components/admin-channels";
-import { AdminChannelMembers } from "@/pages/admin/components/admin-channel-members";
-import { ChannelDetailsPage } from "@/pages/admin/channel-page/channel-page";
-import { ChannelSettingsPage } from "@/pages/admin/settings-page";
+import { ChannelManageLayout } from "@/pages/channel-manage/manage-layout";
+import { MembersTab } from "@/pages/channel-manage/members-tab";
+import { InvitesTab } from "@/pages/channel-manage/invites-tab";
+import { SettingsTab } from "@/pages/channel-manage/settings-tab";
 import { ResetPassword } from "@/pages/reset-password";
 import { ProfilePage } from "@/pages/profile";
+
+/** Old links (/admin/channels/:slug/...) now live inside the workspace. */
+function LegacyManageRedirect() {
+  const { slug, "*": rest } = useParams()
+  return <Navigate to={`/channels/${slug}/manage/${rest || 'members'}`} replace />
+}
 
 export const IndexRoutes = () => {
   const { auth } = authSlice(state => state)
@@ -35,41 +42,25 @@ export const IndexRoutes = () => {
             <Route
               element={<PrivateRoute />}
             >
-              {/* The chat swaps channels in place: no page transition there */}
+              {/* The chat swaps channels in place: no page transition there.
+                  Managing a channel happens in the same column, with the sidebar still visible. */}
               <Route path="/channels" element={<ChannelsPage />}>
-                <Route path="/channels/:slug" element={<Chat />} />
+                <Route path=":slug" element={<Chat />} />
+                <Route path=":slug/manage" element={<ChannelManageLayout />}>
+                  <Route index element={<Navigate to="members" replace />} />
+                  <Route path="members" element={<MembersTab />} />
+                  <Route path="invites" element={<InvitesTab />} />
+                  <Route path="settings" element={<SettingsTab />} />
+                </Route>
               </Route>
 
               <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
 
-              <Route
-                path="/admin"
-                element={
-                  <PageTransition>
-                    <Admin />
-                  </PageTransition>
-                }
-              >
-                <Route
-                  path="/admin/channels"
-                  element={
-                    <AdminChannels />
-                  }
-                />
-                <Route
-                  path="/admin/channels/:slug"
-                  element={<ChannelDetailsPage />}
-                >
-                  <Route
-                    path="/admin/channels/:slug/members"
-                    element={<AdminChannelMembers />}
-                  />
-                  <Route
-                    path="/admin/channels/:slug/settings"
-                    element={<ChannelSettingsPage />}
-                  />
-                </Route>
+              <Route path="/admin" element={<PageTransition><Admin /></PageTransition>}>
+                <Route index element={<Navigate to="/admin/channels" replace />} />
+                <Route path="channels" element={<AdminChannels />} />
               </Route>
+              <Route path="/admin/channels/:slug/*" element={<LegacyManageRedirect />} />
             </Route>
           )}
           <Route path="*" element={<Navigate to={auth ? '/channels' : '/'} />} />

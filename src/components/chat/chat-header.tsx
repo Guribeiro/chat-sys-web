@@ -1,13 +1,24 @@
-import { Link } from 'react-router'
-import { ArrowLeft, Bell, BellOff, Hash, Settings, Users } from 'lucide-react'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router'
+import { ArrowLeft, Bell, BellOff, ChevronDown, Hash, MailPlus, Settings, UserPlus, Users } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { Button } from '../ui/button'
 import { Skeleton } from '../ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu'
+import { InviteMemberDialog } from '../channel-manage/invite-member-dialog'
 import { UserAvatar } from '../user-avatar'
 import { useChannel } from '@/hooks/use-channels'
+import { useChannelDetails } from '@/hooks/use-channel-details'
 import type { Channel } from '@/http/fetch-channels'
 import { updateChannelNotifications } from '@/http/update-channel-notifications'
 import { handleAxiosError } from '@/lib/axios-error-handler'
@@ -56,15 +67,82 @@ function MuteButton({ slug, muted }: { slug: string; muted: boolean }) {
 type ChatHeaderProps = {
   slug?: string
   memberCount?: number
-  canModerate: boolean
+  /** Owner or admin of this channel: the channel menu offers invites and management */
+  canManage: boolean
 }
 
-export function ChatHeader({ slug, memberCount, canModerate }: ChatHeaderProps) {
-  const { channel, isLoading } = useChannel(slug)
+/** The channel name opens a menu: members for everyone, invites and management for admins. */
+function ChannelMenu({ slug, title, description, canManage, onShowMembers }: {
+  slug: string
+  title: string
+  description?: string | null
+  canManage: boolean
+  onShowMembers: () => void
+}) {
+  const navigate = useNavigate()
+  const [inviteOpen, setInviteOpen] = useState(false)
+
+  return (
+    <>
+      <DropdownMenu>
+        <h1 className="flex min-w-0 text-sm font-semibold">
+          <DropdownMenuTrigger className="-mx-1.5 flex min-w-0 items-center gap-1 rounded-md px-1.5 py-1 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring data-[state=open]:bg-accent">
+            <span className="truncate">{title}</span>
+            <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">, abrir o menu do canal</span>
+          </DropdownMenuTrigger>
+        </h1>
+        <DropdownMenuContent align="start" className="w-64">
+          {description && (
+            <>
+              <DropdownMenuLabel className="text-xs font-normal leading-relaxed text-muted-foreground">{description}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+            </>
+          )}
+          <DropdownMenuItem onSelect={onShowMembers}>
+            <Users className="mr-2 size-4" />
+            Ver membros
+          </DropdownMenuItem>
+          {canManage && (
+            <>
+              <DropdownMenuItem onSelect={() => setInviteOpen(true)}>
+                <UserPlus className="mr-2 size-4" />
+                Convidar pessoas
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => navigate(`/channels/${slug}/manage/members`)}>
+                <Settings className="mr-2 size-4" />
+                Gerenciar canal
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate(`/channels/${slug}/manage/invites`)}>
+                <MailPlus className="mr-2 size-4" />
+                Convites pendentes
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {canManage && <InviteMemberDialog slug={slug} channelTitle={title} open={inviteOpen} onOpenChange={setInviteOpen} />}
+    </>
+  )
+}
+
+export function ChatHeader({ slug, memberCount, canManage }: ChatHeaderProps) {
+  const { channel: listed, isLoading } = useChannel(slug)
+  // Inactive channels are not in the sidebar list: fall back to the channel itself
+  const { data: details } = useChannelDetails(listed ? undefined : slug)
+  const channel = listed ?? (details && { ...details, _count: undefined, peer: undefined, muted: undefined })
   const isOnline = usePresence(state => state.isOnline(channel?.peer?.id))
   const membersOpen = useLayout(state => state.membersOpen)
   const toggleMembers = useLayout(state => state.toggleMembers)
   const openMembersSheet = useLayout(state => state.setMembersSheetOpen)
+
+  // Wide screens toggle the side panel; narrower ones open a sheet
+  const showMembers = () => {
+    if (window.matchMedia('(min-width: 1280px)').matches) {
+      if (!membersOpen) toggleMembers()
+    } else openMembersSheet(true)
+  }
 
   const isDirect = channel?.type === 'DIRECT'
   const count = memberCount ?? channel?._count?.members
@@ -97,10 +175,18 @@ export function ChatHeader({ slug, memberCount, canModerate }: ChatHeaderProps) 
         ) : (
           <>
             <Hash className="size-4 shrink-0 text-muted-foreground" />
-            <div className="flex min-w-0 items-baseline gap-3">
-              <h1 className="shrink-0 truncate text-sm font-semibold">{channel?.title ?? slug}</h1>
+            <div className="flex min-w-0 items-center gap-2">
+              {slug ? (
+                <ChannelMenu
+                  slug={slug}
+                  title={channel?.title ?? slug}
+                  description={channel?.description}
+                  canManage={canManage}
+                  onShowMembers={showMembers}
+                />
+              ) : null}
               {channel?.description && (
-                <p className="hidden truncate text-sm text-muted-foreground md:block">{channel.description}</p>
+                <p className="hidden min-w-0 truncate text-sm text-muted-foreground md:block">{channel.description}</p>
               )}
             </div>
           </>
@@ -116,18 +202,6 @@ export function ChatHeader({ slug, memberCount, canModerate }: ChatHeaderProps) 
       {!isDirect && (
         <div className="flex shrink-0 items-center gap-0.5">
           {slug && channel && <MuteButton slug={slug} muted={!!channel.muted} />}
-          {canModerate && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" asChild className="text-muted-foreground hover:text-foreground">
-                  <Link to={`/admin/channels/${slug}/settings`} aria-label="Configurações do canal">
-                    <Settings className="size-4" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Configurações do canal</TooltipContent>
-            </Tooltip>
-          )}
           {/* Wide screens toggle the side panel; narrower ones open a sheet */}
           <Button
             variant="ghost"

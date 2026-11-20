@@ -1,11 +1,8 @@
 import { Link } from 'react-router';
-import { Settings2 } from 'lucide-react';
 
 import { ModeToggle } from '@/components/mode-toggle';
 import { ProfileButton } from '@/components/profile-button';
 import { Brand } from '@/components/brand';
-import { Button } from '../ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { PendingInvites } from './pending-invites';
 import { ActivityButton } from '../activity/activity-button';
 import { SearchPalette } from '../search/search-palette';
@@ -22,16 +19,6 @@ export const Header = () => {
       </div>
 
       <div className="flex items-center gap-0.5">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" asChild className="text-muted-foreground hover:text-foreground">
-              <Link to="/admin/channels" aria-label="Gerenciar canais">
-                <Settings2 className="size-4" />
-              </Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Gerenciar canais</TooltipContent>
-        </Tooltip>
         <ActivityButton />
         <PendingInvites />
         <ModeToggle />

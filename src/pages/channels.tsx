@@ -1,8 +1,9 @@
-import { Link, Outlet, useParams } from "react-router";
+import { Outlet, useMatch, useParams } from "react-router";
 import { Hash, MessageSquarePlus, Search } from "lucide-react";
 
 import { ChannelSidebar } from "@/components/channel-sidebar/channel-sidebar";
 import { NewDirectMessage } from "@/components/channel-sidebar/new-direct-message";
+import { CreateChannelDialog } from "@/components/channel-manage/create-channel-dialog";
 import { ChannelMembersSidebar } from "@/components/channel-members-sidebar/channel-members-sidebar";
 import { ActivityNotifier } from "@/components/activity/activity-notifier";
 import { BrandMark } from "@/components/brand";
@@ -37,12 +38,14 @@ function NoChannelSelected() {
               </Button>
             }
           />
-          <Button variant="outline" asChild>
-            <Link to="/admin/channels">
-              <Hash className="size-4" />
-              Criar canal
-            </Link>
-          </Button>
+          <CreateChannelDialog
+            trigger={
+              <Button variant="outline">
+                <Hash className="size-4" />
+                Criar canal
+              </Button>
+            }
+          />
         </div>
         <button
           type="button"
@@ -60,6 +63,7 @@ function NoChannelSelected() {
 
 export function ChannelsPage() {
   const { slug } = useParams()
+  const managing = !!useMatch('/channels/:slug/manage/*')
 
   return (
     <div className="flex h-full">
@@ -76,7 +80,7 @@ export function ChannelsPage() {
       <section className={cn('min-w-0 flex-1', !slug && 'hidden lg:block')}>
         {slug ? <Outlet /> : <NoChannelSelected />}
       </section>
-      {slug && <ChannelMembersSidebar />}
+      {slug && !managing && <ChannelMembersSidebar />}
     </div>
   )
 }

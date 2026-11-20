@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { fetchChannelMessages, FetchChannelMessagesResponse, MessageItem, MessageReaction } from '@/http/fetch-channel-messages';
-import { fetchChannelMemebers } from '@/http/fetch-channel-members';
+import { channelKeys, useChannelDetails, useChannelMembers } from '@/hooks/use-channel-details';
+import { ADMIN_CHANNELS_KEY } from '@/hooks/use-admin-channels';
 import { markChannelRead } from '@/http/mark-channel-read';
 import type { Channel } from '@/http/fetch-channels';
 import { CreateMessageForm } from './create-message-form';
@@ -49,16 +50,11 @@ export const Chat = () => {
     },
   })
 
-  // Shares the cache with the members sidebar; used to know if I can moderate messages
-  const { data: members } = useQuery({
-    queryKey: ['members', slug],
-    enabled: !!slug,
-    queryFn: async () => {
-      const { data } = await fetchChannelMemebers({ slug })
-      return data
-    },
-  })
-  const isAdmin = members?.some(member => member.memberId === userId && member.role === 'ADMIN') ?? false
+  // Members share the cache with the members panel; permissions come from the API's `viewer`
+  const { data: members } = useChannelMembers(slug)
+  const { data: details } = useChannelDetails(slug)
+  const isAdmin = details?.viewer.isAdmin ?? false
+  const isInactive = details?.active === false
 
   const mentionUsers = useMemo(
     () => (members ?? []).map(member => ({ id: member.memberId, name: member.member.name, avatarUrl: member.member.avatarUrl })),
@@ -154,6 +150,22 @@ export const Chat = () => {
       queryClient.invalidateQueries({ queryKey: ['members', slug] })
     }
 
+    // Promotions, demotions and ownership changes: my moderation rights may change with them
+    const handleMemberUpdated = ({ channelId, userId: changedId }: { channelId: string; userId: string }) => {
+      if (!isCurrentChannel(channelId)) return
+      queryClient.invalidateQueries({ queryKey: channelKeys.members(slug) })
+      if (changedId === userId) {
+        queryClient.invalidateQueries({ queryKey: channelKeys.details(slug) })
+        queryClient.invalidateQueries({ queryKey: ADMIN_CHANNELS_KEY })
+      }
+    }
+
+    const handleOwnerChanged = ({ channelId }: { channelId: string }) => {
+      if (!isCurrentChannel(channelId)) return
+      queryClient.invalidateQueries({ queryKey: channelKeys.members(slug) })
+      queryClient.invalidateQueries({ queryKey: channelKeys.details(slug) })
+    }
+
     const handleChannelDeleted = ({ channelId }: { channelId: string }) => {
       if (!isCurrentChannel(channelId)) return
       toast.warning('Este canal foi removido')
@@ -164,6 +176,7 @@ export const Chat = () => {
       if (!isCurrentChannel(payload.channelId)) return
       queryClient.invalidateQueries({ queryKey: ['channels'] })
       if (payload.slug !== slug) navigate(`/channels/${payload.slug}`, { replace: true })
+      else queryClient.invalidateQueries({ queryKey: channelKeys.details(slug) })
     }
 
     join()
@@ -175,6 +188,8 @@ export const Chat = () => {
     socket.on('channel:message_reactions', handleReactions)
     socket.on('channel:member_removed', handleMemberRemoved)
     socket.on('channel:member_added', handleMemberAdded)
+    socket.on('channel:member_updated', handleMemberUpdated)
+    socket.on('channel:owner_changed', handleOwnerChanged)
     socket.on('channel:deleted', handleChannelDeleted)
     socket.on('channel:updated', handleChannelUpdated)
 
@@ -187,6 +202,8 @@ export const Chat = () => {
       socket.off('channel:message_reactions', handleReactions)
       socket.off('channel:member_removed', handleMemberRemoved)
       socket.off('channel:member_added', handleMemberAdded)
+      socket.off('channel:member_updated', handleMemberUpdated)
+      socket.off('channel:owner_changed', handleOwnerChanged)
       socket.off('channel:deleted', handleChannelDeleted)
       socket.off('channel:updated', handleChannelUpdated)
       channelIdRef.current = null
@@ -318,7 +335,7 @@ export const Chat = () => {
   return (
     <ChatContext.Provider value={chatContext}>
       <div className="flex h-full min-w-0 flex-col">
-        <ChatHeader slug={slug} memberCount={members?.length} canModerate={isAdmin} />
+        <ChatHeader slug={slug} memberCount={members?.length} canManage={isAdmin} />
         <div
           ref={scrollRef}
           onScroll={handleScroll}
@@ -336,7 +353,11 @@ export const Chat = () => {
           />
         </div>
         <TypingIndicator text={typingText} />
-        {!errorMessage && (
+        {isInactive ? (
+          <p className="mx-3 mb-3 rounded-xl border bg-muted/50 px-4 py-3 text-sm text-muted-foreground lg:mx-4">
+            Este canal está inativo: o histórico continua disponível, mas ninguém envia mensagens até um administrador reativá-lo.
+          </p>
+        ) : !errorMessage && (
           <CreateMessageForm
             channelId={channelId}
             members={mentionUsers}

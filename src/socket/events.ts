@@ -39,6 +39,9 @@ export interface ServerToClientEvents {
   'channel:deleted': (payload: { channelId: string }) => void
   'channel:member_added': (payload: { channelId: string; userId: string }) => void
   'channel:member_removed': (payload: { channelId: string; userId: string }) => void
+  'channel:member_updated': (payload: { channelId: string; userId: string; role: 'ADMIN' | 'MEMBER' }) => void
+  'channel:owner_changed': (payload: { channelId: string; previousOwnerId: string; ownerId: string }) => void
+  'notification:invite_revoked': (payload: { inviteId: string }) => void
   'notification:new_invite': (payload: { invite: Invite }) => void
   /** Something addressed to me: a mention, or a reply to one of my messages */
   'notification:activity': (payload: ActivityNotification) => void

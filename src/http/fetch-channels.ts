@@ -4,7 +4,8 @@ import { api } from "./api-client";
 export type Channel = {
   id: string
   title: string
-  description: string
+  description: string | null
+  ownerId?: string
   active: boolean
   slug: string
   _count: {
