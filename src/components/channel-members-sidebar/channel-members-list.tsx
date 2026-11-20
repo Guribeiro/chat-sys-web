@@ -3,7 +3,7 @@ import { AlertCircleIcon } from "lucide-react"
 import { Member } from "@/http/fetch-channel-members"
 import { EmptyIndicator } from "../empty-indicator"
 import { Skeleton } from "../ui/skeleton"
-import { MemberItem } from "@/pages/admin/components/member-item";
+import { MemberItem } from "./member-item";
 
 export type MemberWithConnected = Member & {
   connected: boolean

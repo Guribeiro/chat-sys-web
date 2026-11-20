@@ -1,13 +1,13 @@
 import { api } from "./api-client";
-import { MessageItem } from "./fetch-channel-messages";
+import { Channel } from "./fetch-channels";
 
 type Request = {
   title: string
-  description: string
+  description?: string | null
 }
 
 export async function createChannel({ title, description }: Request) {
-  return api.post<MessageItem>(`/channels`, {
+  return api.post<Channel>(`/channels`, {
     title,
     description
   })

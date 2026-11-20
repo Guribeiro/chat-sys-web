@@ -5,7 +5,8 @@ import { Button } from '../ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { UserAvatar } from '../user-avatar'
-import { useUsers } from '@/hooks/use-users'
+import { useUserSearch } from '@/hooks/use-users'
+import type { WorkspaceUser } from '@/http/fetch-members'
 import { cn } from '@/lib/utils'
 
 type MembersComboboxProps = {
@@ -14,13 +15,13 @@ type MembersComboboxProps = {
   onChange: (userId: string) => void
   placeholder?: string
   buttonPlaceholder?: string
-  /** Users that can not be picked (e.g. already in the channel) */
+  /** Users that can not be picked (e.g. already in the channel or already invited) */
   excludeIds?: string[]
   disabled?: boolean
   'aria-invalid'?: boolean
 }
 
-/** Picks a workspace user, showing avatar, name and e-mail; search matches both name and e-mail. */
+/** Picks a workspace user, showing avatar, name and e-mail. The search runs on the server (name or e-mail). */
 export function MembersCombobox({
   value,
   onChange,
@@ -31,11 +32,15 @@ export function MembersCombobox({
   ...props
 }: MembersComboboxProps) {
   const [open, setOpen] = useState(false)
-  const { users, isLoading, isError, refetch } = useUsers()
+  const [term, setTerm] = useState('')
+  // Results change with every search: remember who was picked to keep showing them
+  const [picked, setPicked] = useState<WorkspaceUser | null>(null)
+  const { users, isLoading, isError, isFetching, settled, refetch } = useUserSearch(term, { enabled: open })
 
   const excluded = new Set(excludeIds)
   const options = users.filter(user => !excluded.has(user.id))
-  const selected = users.find(user => user.id === value)
+  const selected = picked?.id === value ? picked : users.find(user => user.id === value)
+  const searching = isFetching || !settled
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -61,8 +66,13 @@ export function MembersCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-64 p-0" align="start">
-        <Command>
-          <CommandInput placeholder={placeholder} />
+        <Command shouldFilter={false}>
+          <div className="relative">
+            <CommandInput placeholder={placeholder} value={term} onValueChange={setTerm} />
+            {searching && !isLoading && (
+              <Loader2 className="absolute right-3 top-1/2 size-3.5 -translate-y-1/2 animate-spin text-muted-foreground" aria-hidden="true" />
+            )}
+          </div>
           <CommandList>
             {isLoading ? (
               <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
@@ -75,16 +85,18 @@ export function MembersCombobox({
               </div>
             ) : (
               <>
-                <CommandEmpty>
-                  {options.length ? 'Ninguém encontrado' : 'Todo mundo já está neste canal'}
-                </CommandEmpty>
+                {!options.length && !searching && (
+                  <CommandEmpty>
+                    {users.length ? 'Quem corresponde à busca já está no canal ou foi convidado' : 'Ninguém encontrado'}
+                  </CommandEmpty>
+                )}
                 <CommandGroup>
                   {options.map(user => (
                     <CommandItem
                       key={user.id}
-                      // cmdk filters by this value: name and e-mail (the id keeps it unique)
-                      value={`${user.name} ${user.email} ${user.id}`}
+                      value={user.id}
                       onSelect={() => {
+                        setPicked(user)
                         onChange(user.id)
                         setOpen(false)
                       }}

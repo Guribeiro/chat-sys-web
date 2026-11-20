@@ -1,4 +1,4 @@
-import { ChevronDown, LogOut, UserRound } from 'lucide-react'
+import { ChevronDown, LogOut, Settings2, UserRound } from 'lucide-react'
 import { Link } from 'react-router'
 
 import {
@@ -12,10 +12,14 @@ import {
 import { authSlice } from '@/store/auth'
 import { usePresence } from '@/store/presence'
 import { UserAvatar } from './user-avatar'
+import { useAdminChannels } from '@/hooks/use-admin-channels'
 
 export function ProfileButton() {
   const { auth, signout } = authSlice(state => state)
   const isOnline = usePresence(state => state.isOnline(auth?.user?.id))
+  // The entry only exists for people who administer something
+  const { data: adminChannels } = useAdminChannels()
+  const adminCount = adminChannels?.length ?? 0
 
   return (
     <DropdownMenu>
@@ -43,6 +47,16 @@ export function ProfileButton() {
             Meu perfil
           </Link>
         </DropdownMenuItem>
+        {adminCount > 0 && (
+          <DropdownMenuItem asChild>
+            <Link to="/admin/channels">
+              <Settings2 className="mr-2 size-4" />
+              <span className="flex-1">Canais que administro</span>
+              <span className="text-xs text-muted-foreground tabular">{adminCount}</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={signout} className="text-destructive focus:text-destructive">
           <LogOut className="mr-2 size-4" />
           Sair

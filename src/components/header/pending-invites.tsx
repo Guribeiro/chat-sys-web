@@ -100,12 +100,20 @@ export function PendingInvites() {
       )
     }
 
+    // An admin withdrew an invite: drop it from the badge and from the open list
+    const handleInviteRevoked = ({ inviteId }: { inviteId: string }) => {
+      setPendingInvites(prevInvites => prevInvites.filter(item => item.id !== inviteId))
+      queryClient.setQueryData<Invite[]>(['pending-invites'], invites => invites?.filter(item => item.id !== inviteId))
+    }
+
     socket.on('notification:new_invite', handleNewInvite)
+    socket.on('notification:invite_revoked', handleInviteRevoked)
 
     return () => {
       socket.off('notification:new_invite', handleNewInvite)
+      socket.off('notification:invite_revoked', handleInviteRevoked)
     }
-  }, [])
+  }, [queryClient])
 
 
 

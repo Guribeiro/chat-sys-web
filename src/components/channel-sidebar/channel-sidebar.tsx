@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 
@@ -11,6 +11,8 @@ import { socket } from '@/socket';
 import { authSlice } from '@/store/auth';
 import { ChannelList } from './channel-list';
 import { NewDirectMessage } from './new-direct-message';
+import { CreateChannelDialog } from '../channel-manage/create-channel-dialog';
+import { Button } from '../ui/button';
 
 type SectionProps = {
   title: string
@@ -109,7 +111,16 @@ export const ChannelSidebar = () => {
         loading={loading}
         error={error?.message}
         emptyTitle="Nenhum canal ainda"
-        emptyContent="Aceite um convite ou crie um canal em Gerenciar canais."
+        emptyContent="Aceite um convite ou crie um canal com o +."
+        action={
+          <CreateChannelDialog
+            trigger={
+              <Button variant="ghost" size="sm" className="size-7 p-0 text-muted-foreground hover:text-foreground" aria-label="Criar canal" title="Criar canal">
+                <Plus className="size-4" />
+              </Button>
+            }
+          />
+        }
       />
       <SidebarSection
         title="Mensagens diretas"

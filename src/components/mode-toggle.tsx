@@ -29,7 +29,7 @@ export function ModeToggle() {
       <DropdownMenuContent align="end" className="w-40">
         {options.map(({ value, label, icon: Icon }) => (
           <DropdownMenuItem key={value} onClick={() => setTheme(value)}>
-            <Icon className="size-4" />
+            <Icon className="mr-2 size-4" />
             {label}
             {theme === value && <Check className="ml-auto size-4 text-primary" />}
           </DropdownMenuItem>

@@ -1,4 +1,4 @@
-import { Crown } from "lucide-react";
+import { Shield } from "lucide-react";
 
 import { UserAvatar } from "@/components/user-avatar";
 import {
@@ -50,7 +50,7 @@ export function MemberItem({ data, connected }: MemberItemProps) {
             {isMe && <span className="ml-1 normal-case text-muted-foreground">(você)</span>}
           </span>
           {isAdmin && (
-            <Crown className="size-3.5 shrink-0 text-amber-500" aria-label="Administrador" />
+            <Shield className="size-3.5 shrink-0 text-muted-foreground" aria-label="Administrador" />
           )}
         </button>
       </DialogTrigger>
@@ -63,7 +63,7 @@ export function MemberItem({ data, connected }: MemberItemProps) {
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 rounded-lg bg-muted/60 p-3 text-sm">
           <dt className="text-muted-foreground">Função</dt>
           <dd className="flex items-center gap-1.5 font-medium">
-            {isAdmin && <Crown className="size-3.5 text-amber-500" />}
+            {isAdmin && <Shield className="size-3.5 text-muted-foreground" aria-hidden="true" />}
             {isAdmin ? 'Administrador' : 'Membro'}
           </dd>
           <dt className="text-muted-foreground">Status</dt>

@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
 
-import { fetchChannelMemebers } from '@/http/fetch-channel-members';
+import { useChannelMembers } from '@/hooks/use-channel-details';
 import { useChannel } from '@/hooks/use-channels';
 import { handleAxiosError } from '@/lib/axios-error-handler';
 import { cn } from '@/lib/utils';
@@ -12,15 +11,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { ChannelMembersList, MemberWithConnected } from './channel-members-list';
 
 function useChannelMembersWithPresence(slug?: string) {
-  const { data, isFetching, error } = useQuery({
-    queryKey: ['members', slug],
-    refetchOnWindowFocus: true,
-    enabled: !!slug,
-    queryFn: async () => {
-      const { data } = await fetchChannelMemebers({ slug })
-      return data
-    },
-  })
+  const { data, isFetching, error } = useChannelMembers(slug)
 
   const onlineIds = usePresence(state => state.onlineIds)
 
