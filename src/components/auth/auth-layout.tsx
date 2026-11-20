@@ -49,26 +49,30 @@ function ProductPreview() {
 
 export function AuthLayout({ title, description, children, footer }: AuthLayoutProps) {
   return (
-    <div className="grid min-h-dvh bg-background lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-      <aside className="relative hidden flex-col justify-between overflow-hidden border-r bg-sidebar p-10 lg:flex">
-        <Brand />
-        <div className="flex flex-col items-start gap-10">
-          <div className="max-w-md space-y-3">
-            <h2 className="text-3xl font-semibold tracking-tight text-balance">
-              Conversas do time, no momento em que acontecem.
-            </h2>
-            <p className="text-muted-foreground text-pretty">
-              Canais, mensagens diretas, menções, reações e anexos — tudo sincronizado em tempo real.
-            </p>
+    // Two equal halves; on wide screens both blocks hug the central seam, so the pitch and the
+    // form read as one composition instead of two islands with a void between them
+    <div className="grid min-h-dvh bg-background lg:grid-cols-2">
+      <aside className="relative hidden overflow-hidden border-r bg-sidebar p-10 lg:flex xl:pr-20">
+        <div className="mx-auto flex w-full max-w-md flex-col justify-between xl:mr-0">
+          <Brand />
+          <div className="flex flex-col items-start gap-10">
+            <div className="space-y-3">
+              <h2 className="text-3xl font-semibold tracking-tight text-balance">
+                Conversas do time, no momento em que acontecem.
+              </h2>
+              <p className="text-muted-foreground text-pretty">
+                Canais, mensagens diretas, menções, reações e anexos — tudo sincronizado em tempo real.
+              </p>
+            </div>
+            <ProductPreview />
           </div>
-          <ProductPreview />
+          <p className="text-xs text-muted-foreground">Feito com React, Socket.io e Postgres.</p>
         </div>
-        <p className="text-xs text-muted-foreground">Feito com React, Socket.io e Postgres.</p>
       </aside>
 
-      <main className="flex flex-col px-5 py-8 sm:px-8">
+      <main className="flex flex-col px-5 py-8 sm:px-8 xl:pl-20">
         <Brand className="lg:hidden" />
-        <div className="flex flex-1 items-center justify-center py-10">
+        <div className="flex flex-1 items-center justify-center py-10 xl:justify-start">
           <div className="w-full max-w-sm">
             <div className="mb-8 space-y-2">
               <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
