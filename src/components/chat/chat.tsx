@@ -355,9 +355,12 @@ export const Chat = () => {
         </div>
         <TypingIndicator text={typingText} />
         {isInactive ? (
-          <p className="mx-3 mb-3 rounded-xl border bg-muted/50 px-4 py-3 text-sm text-muted-foreground lg:mx-4">
-            Este canal está inativo: o histórico continua disponível, mas ninguém envia mensagens até um administrador reativá-lo.
-          </p>
+          // Same column and bottom spacing as the composer it replaces
+          <div className="shrink-0 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:px-6 lg:pb-4">
+            <p className="mx-auto max-w-5xl rounded-xl border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+              Este canal está inativo: o histórico continua disponível, mas ninguém envia mensagens até um administrador reativá-lo.
+            </p>
+          </div>
         ) : !errorMessage && (
           <CreateMessageForm
             channelId={channelId}
