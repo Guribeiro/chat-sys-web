@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 
@@ -21,9 +21,9 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { fetchChannelMemebers } from '@/http/fetch-channel-members';
 
-import { ChannelMembersList, ConnectedUser, MemberWithConnected } from './channel-members-list';
+import { ChannelMembersList, MemberWithConnected } from './channel-members-list';
 import { handleAxiosError } from '@/lib/axios-error-handler';
-import { socket } from '@/socket';
+import { usePresence } from '@/store/presence';
 
 export const ChannelMembersSidebar = () => {
   const [collapsed, setCollapsed] = useState(false)
@@ -40,31 +40,16 @@ export const ChannelMembersSidebar = () => {
   })
 
 
-  const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
+  const onlineIds = usePresence(state => state.onlineIds)
 
   const members = useMemo<MemberWithConnected[] | undefined>(() => {
     if (!data) return undefined;
 
-    const connectedUserIds = new Set(connectedUsers.map(user => user.user.id));
-
     return data.map(member => ({
       ...member,
-      connected: connectedUserIds.has(member.memberId),
+      connected: onlineIds.has(member.memberId),
     }));
-  }, [data, connectedUsers]);
-
-  useEffect(() => {
-    socket.on('user:list_updated', (data: ConnectedUser[]) => {
-      console.log({ data })
-      setConnectedUsers(data)
-    })
-
-    return () => {
-      socket.off('user:list_updated', (data: ConnectedUser[]) => {
-        setConnectedUsers(data)
-      })
-    }
-  }, [connectedUsers])
+  }, [data, onlineIds]);
 
 
   const errorMessage = useMemo(() => {

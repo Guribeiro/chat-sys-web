@@ -4,45 +4,17 @@ import { Outlet, useParams } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Hash } from "lucide-react";
 
-import { socket } from '@/socket'
-import { useEffect, useState } from "react";
+import { connectSocket } from '@/socket'
+import { useEffect } from "react";
 import { authSlice } from "@/store/auth";
 
 
 export function ChannelsPage() {
   const { auth } = authSlice(state => state)
   const { slug } = useParams()
-  const [isConnected, setIsConnected] = useState(false)
-
-  function onDisconnect() {
-    setIsConnected(false);
-  }
-
   useEffect(() => {
-    if (!socket.connected) {
-      socket.connect(); // Explicitly connect when component mounts
-    }
-
-    function onConnect() {
-      console.log('Socket connected!'); // For debugging
-      setIsConnected(true);
-      // Ensure auth.user is not null/undefined before emitting
-      if (auth.user) {
-        socket.emit('user_connected', auth.user);
-        console.log({ user_connected: auth.user })
-      } else {
-        console.warn('auth.user is not available when socket connected.');
-        // Handle case where user data isn't ready (e.g., redirect to login)
-      }
-    }
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-    }
-  }, [auth.user])
+    if (auth?.token) connectSocket(auth.token)
+  }, [auth?.token])
 
   return (
     <div className="lg:flex gap-4">

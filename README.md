@@ -51,12 +51,23 @@ This project is built with a modern tech stack that includes:
 
 To get a local copy up and running, follow these simple steps.
 
+### Running with Docker (recommended)
+
+The whole stack (Postgres + API + this front-end) runs from the docker-compose in the API repository. Clone both repositories side by side (`chat-sys/api` and `chat-sys/web`) and run:
+
+```bash
+cd ../api
+docker compose up --build -d
+```
+
+The app will be available at http://localhost:8080 with hot reload.
+
 ### Prerequisites
 
 Make sure you have the following software installed on your machine:
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) or [pnpm](https://pnpm.io/) or [bun](https://bun.sh/)
+- [Node.js](https://nodejs.org/) (v22 or higher)
+- [pnpm](https://pnpm.io/) (v9) — the project uses `pnpm-lock.yaml`; other package managers are not supported
 
 ### Installation
 
@@ -64,50 +75,26 @@ Make sure you have the following software installed on your machine:
    ```sh
    git clone https://github.com/Guribeiro/chat-sys-web.git
    ```
-2. Install NPM packages
+2. Install the dependencies
    ```sh
-   npm install
-   ```
-   or
-    ```sh
-   yarn install
-   ```
-   or
-    ```sh
    pnpm install
-   ```
-   or
-    ```sh
-   bun install
    ```
 3. Create a `.env.local` file in the root of the project and add the necessary environment variables. You can use `.env.local.example` as a template.
 
 4. Start the development server
    ```sh
-   npm run dev
-   ```
-   or
-    ```sh
-   yarn dev
-   ```
-   or
-    ```sh
    pnpm dev
-   ```
-   or
-    ```sh
-   bun dev
    ```
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-- `npm run dev`: Runs the app in the development mode.
-- `npm run build`: Builds the app for production to the `dist` folder.
-- `npm run build:dev`: Builds the app for development to the `dist` folder.
-- `npm run lint`: Lints the code using ESLint.
-- `npm run preview`: Serves the production build locally for preview.
+- `pnpm dev`: Runs the app in the development mode.
+- `pnpm build`: Builds the app for production to the `dist` folder.
+- `pnpm build:dev`: Builds the app for development to the `dist` folder.
+- `pnpm lint`: Lints the code using ESLint.
+- `pnpm preview`: Serves the production build locally for preview.
 
 ## Project Structure
 
