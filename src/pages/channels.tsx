@@ -1,5 +1,6 @@
 import { ChannelSidebar } from "@/components/channel-sidebar/channel-sidebar";
 import { ChannelMembersSidebar } from "@/components/channel-members-sidebar/channel-members-sidebar";
+import { MentionNotifier } from "@/components/chat/mention-notifier";
 import { Outlet, useParams } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Hash } from "lucide-react";
@@ -18,6 +19,7 @@ export function ChannelsPage() {
 
   return (
     <div className="lg:flex gap-4">
+      <MentionNotifier />
       <aside className="flex flex-col gap-2 lg:max-w-[238px] w-full">
         <ChannelSidebar />
         <ChannelMembersSidebar />

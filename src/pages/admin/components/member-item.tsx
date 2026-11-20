@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,10 +29,10 @@ export function MemberItem({ data, connected }: MemberItemProps) {
       <DialogTrigger asChild>
         <div className={`flex items-center space-x-2 text-sm}`}>
           <div className='flex flex-1 items-center space-x-2'>
-            <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.member?.name}`}
-              alt={data.member.name}
-              className={`w-8 h-8 rounded-full border-2 ${connected ? 'border-green-500' : 'border-red-500'} shadow-sm `}
+            <UserAvatar
+              name={data.member?.name}
+              avatarUrl={data.member?.avatarUrl}
+              className={`border-2 ${connected ? 'border-green-500' : 'border-red-500'} shadow-sm`}
             />
 
             <span className={`truncate capitalize ${auth.user.id === data.memberId ? 'text-green-500 animate-pulse' : ''}`}>{data.member.name}</span>
@@ -50,15 +50,12 @@ export function MemberItem({ data, connected }: MemberItemProps) {
           {data.role === 'ADMIN' && (
             <Crown className="w-4 h-4 text-yellow-500 animate-pulse" />
           )}
-          <Avatar>
-            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data.member.name}`} alt={data.member.name} />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          <UserAvatar name={data.member.name} avatarUrl={data.member.avatarUrl} className="h-20 w-20" />
           <DialogDescription>
             {data.member.name}
           </DialogDescription>
           <DialogDescription>
-            Membro desde:  <span className="text-xs text-foreground/50">{new Date(data.createdAt).toLocaleTimeString([], { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}</span>
+            Membro desde:  <span className="text-xs text-foreground/50">{new Date(data.createdAt).toLocaleTimeString([], { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
           </DialogDescription>
         </div>
 

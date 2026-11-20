@@ -5,19 +5,18 @@ import { ThemeProvider } from "./components/theme-provider"
 import { isAxiosError } from "axios"
 import { authSlice } from "./store/auth"
 
-function App() {
-  const { signout } = authSlice(state => state)
-  const client = new QueryClient({
+// Created once: recreating it on every render would throw the whole cache away
+const client = new QueryClient({
     queryCache: new QueryCache({
-      onError: (error, query) => {
+      onError: (error) => {
         if (isAxiosError(error)) {
           if (error && error?.response && error?.response.status >= 500) {
             toast.error('A server error occurred. Please try again later.');
           }
 
           else if (error && error.response && error.response.status === 401) {
-            toast.error(error.response.data.error);
-            signout()
+            // The API client already tried to refresh the session: it is really over
+            authSlice.getState().signout()
           } else {
             toast.error('Something went wrong with fetching data.');
           }
@@ -25,7 +24,7 @@ function App() {
       },
     }),
     mutationCache: new MutationCache({
-      onError: (error, variables, context, mutation) => {
+      onError: (error, _variables, _context, mutation) => {
         // This callback will be fired for all failed mutations
         console.error('Global Mutation Error:', error);
 
@@ -36,7 +35,9 @@ function App() {
     }),
     defaultOptions: {
       queries: {
-        retry: 3,
+        // 4xx answers (forbidden, not found, validation) will not get better by retrying
+        retry: (failureCount, error) =>
+          failureCount < 3 && !(isAxiosError(error) && error.response && error.response.status < 500),
       },
       mutations: {
         retry: 0,
@@ -44,6 +45,7 @@ function App() {
     },
   })
 
+function App() {
 
   return (
     <ThemeProvider>
