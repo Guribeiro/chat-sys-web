@@ -5,15 +5,9 @@ interface AuthenticateUser {
   password: string
 }
 
-interface Response {
-  user: {
-    admin: boolean
-    id: string
-    name: string
-    email: string
-  }
-  token: string
-}
+import type { Session } from "./session";
+
+type Response = Session
 
 export async function authenticateUser({ email, password }: AuthenticateUser) {
   return api.post<Response>('/sessions/password', {

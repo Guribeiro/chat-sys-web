@@ -115,6 +115,12 @@ export const SigninPage = () => {
                     Esqueceu sua senha ?
                   </Link>
                 </Button>
+                <p className="text-center text-sm text-muted-foreground">
+                  Não tem conta?{' '}
+                  <Link className="font-medium text-primary hover:underline" to="/signup">
+                    Criar conta
+                  </Link>
+                </p>
               </div>
 
             </form>

@@ -2,7 +2,7 @@ import { Role } from "@/schemas";
 import { api } from "./api-client";
 
 export type Channel = {
-  id: number
+  id: string
   title: string
   description: string
   active: boolean
@@ -10,6 +10,11 @@ export type Channel = {
   _count: {
     members: number
   }
+  /** Messages from other members since my last read */
+  unreadCount?: number
+  type?: 'GROUP' | 'DIRECT'
+  /** DM only: the other participant */
+  peer?: { id: string; name: string; email: string; avatarUrl?: string | null } | null
 }
 
 export type Status = 'active' | 'deactive' | null

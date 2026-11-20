@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/user-avatar";
 import { removeMemberFromChannel } from "@/http/remove-member-from-channel"
 import { Member } from "@/http/fetch-channel-members"
 import { handleAxiosError } from "@/lib/axios-error-handler"
@@ -56,10 +57,10 @@ export function ChannelMemberListItem({ data: member }: ChannelMemberListItemPro
           <DialogTrigger asChild>
             <div className={`flex items-center space-x-2 text-sm}`}>
               <div className='flex flex-1 items-center space-x-2'>
-                <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.member.name}`}
-                  alt={member.member.name}
-                  className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                <UserAvatar
+                  name={member.member.name}
+                  avatarUrl={member.member.avatarUrl}
+                  className="border-2 border-white shadow-sm"
                 />
                 <span className={`truncate capitalize ${auth.user.id === member.member.id ? 'text-green-500 animate-pulse' : ''}`}>{member.member.name}</span>
               </div>

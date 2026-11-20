@@ -1,38 +1,28 @@
 import Message from '../messages';
 import { Button } from '@/components/ui/button';
 
-import { useEffect, useRef } from 'react';
-
 import { AlertCircleIcon, Loader2 } from 'lucide-react';
-import { useParams } from 'react-router';
-import { authSlice } from '@/store/auth';
 
 import { MessageItem } from '@/http/fetch-channel-messages';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
-
-type Page = {
-  nextPage: number | null
-  previousPage: number | null
-  messages: MessageItem[]
-}
-
 type MessagesListProps = {
   messages: MessageItem[]
   loading?: boolean
+  loadingOlder?: boolean
+  hasOlder?: boolean
   error?: string
-  lastPage?: Page
-  fetchNextPage: () => void
+  onLoadOlder: () => void
 }
 
-export function MessagesList({ messages, error, loading, lastPage, fetchNextPage }: MessagesListProps) {
-  const { auth } = authSlice(state => state)
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages])
-
+export function MessagesList({
+  messages,
+  error,
+  loading,
+  loadingOlder,
+  hasOlder,
+  onLoadOlder,
+}: MessagesListProps) {
   if (error) {
     return (
       <Alert variant="destructive">
@@ -45,7 +35,7 @@ export function MessagesList({ messages, error, loading, lastPage, fetchNextPage
     )
   }
 
-  if (loading && !messages.length) {
+  if (loading) {
     return (
       <div className='flex items-center justify-center h-full'>
         <div className='flex flex-col items-center justify-center'>
@@ -58,13 +48,15 @@ export function MessagesList({ messages, error, loading, lastPage, fetchNextPage
 
   return (
     <div>
-      <div className='flex items-center w-full justify-center'>
-        {lastPage?.nextPage ? (
+      <div className='flex items-center w-full justify-center mb-2'>
+        {hasOlder ? (
           <Button
             variant='outline'
-            onClick={() => fetchNextPage()}
+            onClick={onLoadOlder}
+            disabled={loadingOlder}
             className='shadow-sm'
           >
+            {loadingOlder && <Loader2 className="w-4 h-4 animate-spin" />}
             Carregar mensagens anteriores
           </Button>
         ) : (
@@ -72,19 +64,8 @@ export function MessagesList({ messages, error, loading, lastPage, fetchNextPage
         )}
       </div>
       {messages.map(message => (
-        <Message
-          key={message.id}
-          message={{
-            id: message.id,
-            content: message.content,
-            isCurrentUser: auth.user.id === message.authorId,
-            timestamp: new Date(message.createdAt),
-            username: message.author.name,
-          }}
-        />
+        <Message key={message.id} message={message} />
       ))}
-
-      <div ref={messagesEndRef} />
     </div>
   )
 }
