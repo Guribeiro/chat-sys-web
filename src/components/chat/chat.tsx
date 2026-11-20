@@ -97,7 +97,8 @@ export const Chat = () => {
 
     const join = () => {
       socket.emit('channel:join', { slug }, (response) => {
-        if ('error' in response) toast.error(response.error)
+        // One toast per channel: reconnects and re-renders retry the join and used to stack copies
+        if ('error' in response) toast.error(response.error, { id: `channel-join-${slug}` })
         else {
           channelIdRef.current = response.channelId
           setChannelId(response.channelId)

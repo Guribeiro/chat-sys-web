@@ -10,18 +10,17 @@ import { authSlice } from "./store/auth"
 const client = new QueryClient({
     queryCache: new QueryCache({
       onError: (error) => {
-        if (isAxiosError(error)) {
-          if (error && error?.response && error?.response.status >= 500) {
-            toast.error('O servidor encontrou um erro. Tente novamente em instantes.');
-          }
+        if (!isAxiosError(error)) return
+        const status = error.response?.status
 
-          else if (error && error.response && error.response.status === 401) {
-            // The API client already tried to refresh the session: it is really over
-            authSlice.getState().signout()
-          } else {
-            toast.error('Não foi possível carregar os dados.');
-          }
-        }
+        // The API client already tried to refresh the session: it is really over
+        if (status === 401) return authSlice.getState().signout()
+        // Forbidden / not found are answers, not failures: each screen renders its own state for them
+        if (status === 403 || status === 404) return
+
+        // Fixed ids: several queries failing together show one toast, not a stack
+        if (status && status >= 500) toast.error('O servidor encontrou um erro. Tente novamente em instantes.', { id: 'query-error-server' })
+        else toast.error('Não foi possível carregar os dados. Confira sua conexão.', { id: 'query-error' })
       },
     }),
     mutationCache: new MutationCache({
