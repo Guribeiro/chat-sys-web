@@ -1,34 +1,41 @@
-import { ModeToggle } from '@/components/mode-toggle';
-import { Separator } from '@/components/ui/separator';
-import { ProfileButton } from '@/components/profile-button';
-import { Button } from '../ui/button';
 import { Link } from 'react-router';
-import { User } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 
+import { ModeToggle } from '@/components/mode-toggle';
+import { ProfileButton } from '@/components/profile-button';
+import { Brand } from '@/components/brand';
+import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { PendingInvites } from './pending-invites';
+import { ActivityButton } from '../activity/activity-button';
 import { SearchPalette } from '../search/search-palette';
 
 export const Header = () => {
   return (
-    <header className="flex items-center justify-between py-4">
-      {/* <img src={logo} className='w-28 lg:w-44' /> */}
-      <span className='text-muted-foreground text-2xl font-medium'>Realtime chat</span>
-      <div className='flex items-center gap-2'>
+    <header className="flex h-14 shrink-0 items-center gap-3 border-b px-3 lg:px-4">
+      <Link to="/channels" className="rounded-md" aria-label="Realtime chat, ir para os canais">
+        <Brand nameClassName="hidden sm:inline" />
+      </Link>
+
+      <div className="flex flex-1 justify-end md:justify-center">
         <SearchPalette />
-        <div className='flex items-center gap-2'>
-          <Button variant='outline' asChild>
-            <Link to='/admin/channels'>
-              <User className="w-4 h-4" />
-              <span className='text-foreground hidden lg:flex'>
-                Admin
-              </span>
-            </Link>
-          </Button>
-        </div>
+      </div>
+
+      <div className="flex items-center gap-0.5">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" asChild className="text-muted-foreground hover:text-foreground">
+              <Link to="/admin/channels" aria-label="Gerenciar canais">
+                <Settings2 className="size-4" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Gerenciar canais</TooltipContent>
+        </Tooltip>
+        <ActivityButton />
         <PendingInvites />
-        <Separator orientation="vertical" className="h-5" />
         <ModeToggle />
-        <Separator orientation="vertical" className="h-5" />
+        <span className="mx-1.5 h-5 w-px bg-border" aria-hidden="true" />
         <ProfileButton />
       </div>
     </header>

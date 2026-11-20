@@ -1,34 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useParams } from 'react-router';
-import { Button } from '@/components/ui/button';
-
-import {
-  Card,
-  CardContent,
-  CardHeader
-} from '@/components/ui/card';
-
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent
-} from '../ui/collapsible';
-import {
-  ChevronDown,
-  ChevronUp,
-  Users2,
-} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+
 import { fetchChannelMemebers } from '@/http/fetch-channel-members';
-
-import { ChannelMembersList, MemberWithConnected } from './channel-members-list';
+import { useChannel } from '@/hooks/use-channels';
 import { handleAxiosError } from '@/lib/axios-error-handler';
+import { cn } from '@/lib/utils';
+import { useLayout } from '@/store/layout';
 import { usePresence } from '@/store/presence';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '../ui/sheet';
+import { ChannelMembersList, MemberWithConnected } from './channel-members-list';
 
-export const ChannelMembersSidebar = () => {
-  const [collapsed, setCollapsed] = useState(false)
-  const { slug } = useParams()
-
+function useChannelMembersWithPresence(slug?: string) {
   const { data, isFetching, error } = useQuery({
     queryKey: ['members', slug],
     refetchOnWindowFocus: true,
@@ -39,56 +22,54 @@ export const ChannelMembersSidebar = () => {
     },
   })
 
-
   const onlineIds = usePresence(state => state.onlineIds)
 
-  const members = useMemo<MemberWithConnected[] | undefined>(() => {
-    if (!data) return undefined;
+  const members = useMemo<MemberWithConnected[] | undefined>(
+    () => data?.map(member => ({ ...member, connected: onlineIds.has(member.memberId) })),
+    [data, onlineIds],
+  )
 
-    return data.map(member => ({
-      ...member,
-      connected: onlineIds.has(member.memberId),
-    }));
-  }, [data, onlineIds]);
+  const errorMessage = useMemo(() => (error ? handleAxiosError(error) : undefined), [error])
 
+  return { members, loading: isFetching, error: errorMessage }
+}
 
-  const errorMessage = useMemo(() => {
-    if (error) return handleAxiosError(error)
-  }, [error])
+/** Right-hand members panel: a column on wide screens, a sheet below xl. */
+export const ChannelMembersSidebar = () => {
+  const { slug } = useParams()
+  const { members, loading, error } = useChannelMembersWithPresence(slug)
+  const membersOpen = useLayout(state => state.membersOpen)
+  const sheetOpen = useLayout(state => state.membersSheetOpen)
+  const setSheetOpen = useLayout(state => state.setMembersSheetOpen)
 
+  const { channel } = useChannel(slug)
 
-  if (!slug) return null
+  // A DM has two people and its header already shows the other one's presence
+  if (!slug || channel?.type === 'DIRECT') return null
 
+  const list = <ChannelMembersList data={members} error={error} loading={loading} />
 
   return (
-    <Card className="h-fit">
-      <Collapsible
-        open={collapsed}
-        onOpenChange={setCollapsed}
+    <>
+      <aside
+        aria-label="Membros do canal"
+        className={cn(
+          'hidden w-60 shrink-0 flex-col overflow-y-auto border-l px-2 py-3',
+          membersOpen && 'xl:flex',
+        )}
       >
-        <CardHeader >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Users2 className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-foreground truncate ">Membros ({data?.length})</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                  {collapsed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                </Button>
-              </CollapsibleTrigger>
+        {list}
+      </aside>
 
-            </div>
-          </div>
-        </CardHeader>
-        <CollapsibleContent>
-          <CardContent className=" space-y-1">
-            <ChannelMembersList data={members} error={errorMessage} loading={isFetching} />
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible>
-    </Card >
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent side="right" className="flex w-72 flex-col gap-0 p-0 xl:hidden">
+          <SheetHeader className="border-b px-4 py-3">
+            <SheetTitle className="text-base">Membros</SheetTitle>
+            <SheetDescription className="sr-only">Membros deste canal e quem está online</SheetDescription>
+          </SheetHeader>
+          <div className="overflow-y-auto px-2 py-3">{list}</div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };
-

@@ -1,32 +1,109 @@
-import { useQuery } from "@tanstack/react-query";
-import { Combobox, ComboboxProps } from "../combobox";
-import { fetchMembers } from "@/http/fetch-members";
+import { useState } from 'react'
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
 
-type MembersComboboxProps = Pick<ComboboxProps, 'onChange' | 'value' | 'placeholder' | 'buttonPlaceholder'>
+import { Button } from '../ui/button'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { UserAvatar } from '../user-avatar'
+import { useUsers } from '@/hooks/use-users'
+import { cn } from '@/lib/utils'
 
-export function MembersCombobox({ value, onChange, placeholder, buttonPlaceholder }: MembersComboboxProps) {
+type MembersComboboxProps = {
+  /** Selected user id */
+  value?: string
+  onChange: (userId: string) => void
+  placeholder?: string
+  buttonPlaceholder?: string
+  /** Users that can not be picked (e.g. already in the channel) */
+  excludeIds?: string[]
+  disabled?: boolean
+  'aria-invalid'?: boolean
+}
 
-  const { data, isFetching, error } = useQuery({
-    queryKey: ['users'],
-    initialData: [],
-    queryFn: async () => {
-      const { data } = await fetchMembers()
-      return data
-    },
-  })
+/** Picks a workspace user, showing avatar, name and e-mail; search matches both name and e-mail. */
+export function MembersCombobox({
+  value,
+  onChange,
+  placeholder = 'Buscar por nome ou e-mail...',
+  buttonPlaceholder = 'Selecione uma pessoa',
+  excludeIds = [],
+  disabled,
+  ...props
+}: MembersComboboxProps) {
+  const [open, setOpen] = useState(false)
+  const { users, isLoading, isError, refetch } = useUsers()
 
-  const options = data.map(item => ({ value: `${item.name}/${String(item.id)}`, label: item.name }))
+  const excluded = new Set(excludeIds)
+  const options = users.filter(user => !excluded.has(user.id))
+  const selected = users.find(user => user.id === value)
 
   return (
-    <div>
-      <Combobox
-        options={options}
-        value={value}
-        disabled={isFetching}
-        onChange={onChange}
-        placeholder={placeholder}
-        buttonPlaceholder={buttonPlaceholder}
-      />
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          aria-invalid={props['aria-invalid']}
+          disabled={disabled}
+          className="h-10 w-full justify-between gap-2 px-3 font-normal"
+        >
+          {selected ? (
+            <span className="flex min-w-0 items-center gap-2">
+              <UserAvatar name={selected.name} avatarUrl={selected.avatarUrl} className="size-6" />
+              <span className="truncate">{selected.name}</span>
+            </span>
+          ) : (
+            <span className="truncate text-muted-foreground">{buttonPlaceholder}</span>
+          )}
+          <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-64 p-0" align="start">
+        <Command>
+          <CommandInput placeholder={placeholder} />
+          <CommandList>
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" /> Carregando pessoas...
+              </div>
+            ) : isError ? (
+              <div className="flex flex-col items-center gap-2 py-6 text-sm text-muted-foreground">
+                Não foi possível carregar as pessoas.
+                <Button type="button" size="sm" variant="outline" onClick={() => refetch()}>Tentar de novo</Button>
+              </div>
+            ) : (
+              <>
+                <CommandEmpty>
+                  {options.length ? 'Ninguém encontrado' : 'Todo mundo já está neste canal'}
+                </CommandEmpty>
+                <CommandGroup>
+                  {options.map(user => (
+                    <CommandItem
+                      key={user.id}
+                      // cmdk filters by this value: name and e-mail (the id keeps it unique)
+                      value={`${user.name} ${user.email} ${user.id}`}
+                      onSelect={() => {
+                        onChange(user.id)
+                        setOpen(false)
+                      }}
+                      className="gap-2"
+                    >
+                      <UserAvatar name={user.name} avatarUrl={user.avatarUrl} className="size-7" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{user.name}</span>
+                        <span className="block truncate text-xs text-muted-foreground">{user.email}</span>
+                      </span>
+                      <Check className={cn('size-4 shrink-0', value === user.id ? 'opacity-100' : 'opacity-0')} />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }

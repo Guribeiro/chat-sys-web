@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState, type ReactNode } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { fetchMembers } from '@/http/fetch-members'
+import { useUsers } from '@/hooks/use-users'
 import { openDirectMessage } from '@/http/direct-messages'
 import { handleAxiosError } from '@/lib/axios-error-handler'
 import { authSlice } from '@/store/auth'
@@ -14,17 +14,13 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { UserAvatar } from '../user-avatar'
 
 /** "+" button that starts (or reopens) a 1:1 conversation with any user. */
-export function NewDirectMessage() {
+export function NewDirectMessage({ trigger, align = 'end' }: { trigger?: ReactNode; align?: 'start' | 'center' | 'end' } = {}) {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const userId = authSlice(state => state.auth?.user?.id)
 
-  const { data: users, isFetching } = useQuery({
-    queryKey: ['users'],
-    enabled: open,
-    queryFn: async () => (await fetchMembers()).data,
-  })
+  const { users, isFetching } = useUsers({ enabled: open })
 
   const openMutation = useMutation({
     mutationFn: (peerId: string) => openDirectMessage({ userId: peerId }),
@@ -39,17 +35,17 @@ export function NewDirectMessage() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" aria-label="Nova conversa">
+        {trigger ?? <Button variant="ghost" size="sm" className="size-7 p-0 text-muted-foreground hover:text-foreground" aria-label="Nova conversa" title="Nova conversa">
           <Plus className="h-4 w-4" />
-        </Button>
+        </Button>}
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0" align="end">
+      <PopoverContent className="w-72 p-0" align={align}>
         <Command>
           <CommandInput placeholder="Conversar com..." />
           <CommandList>
             <CommandEmpty>{isFetching ? 'Carregando...' : 'Ninguém encontrado'}</CommandEmpty>
             <CommandGroup>
-              {users?.filter(user => user.id !== userId).map(user => (
+              {users.filter(user => user.id !== userId).map(user => (
                 <CommandItem
                   key={user.id}
                   value={`${user.name} ${user.email}`}

@@ -1,31 +1,34 @@
-import { Button } from "@/components/ui/button";
+import { NavLink, Outlet, useParams } from "react-router";
 import { Settings, Users } from "lucide-react";
-import { Link, Outlet, useLocation, useParams } from "react-router";
+
+import { cn } from "@/lib/utils";
 
 export function ChannelDetailsPage() {
   const { slug } = useParams()
-  const location = useLocation()
-  const pathname = location.pathname
+
+  const tabs = [
+    { to: `/admin/channels/${slug}/members`, label: 'Membros', icon: Users },
+    { to: `/admin/channels/${slug}/settings`, label: 'Configurações', icon: Settings },
+  ]
 
   return (
-    <div className="space-y-2">
-      <div className="flex gap-1 justify-end">
-        <Button asChild variant={'outline'} className={`text-foreground ${pathname.includes('/members') && 'border-green-500'}`}>
-          <Link to={`/admin/channels/${slug}/members`}>
-            <Users className="w-4 h-4" />
-            <p className='hidden lg:flex'>Ver membros</p>
-          </Link>
-        </Button>
-        <Button asChild variant={'outline'} className={`text-foreground ${pathname.includes('/settings') && 'border-green-500'}`}>
-          <Link to={`/admin/channels/${slug}/settings`}>
-            <Settings className="w-4 h-4" />
-            <p className='hidden lg:flex'>Configurações</p>
-          </Link>
-        </Button>
-      </div>
-      <div className="pt-6 pb-2">
-        <Outlet />
-      </div>
+    <div>
+      <nav aria-label="Seções do canal" className="mb-8 flex gap-1 border-b">
+        {tabs.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) => cn(
+              '-mb-px flex h-10 items-center gap-2 border-b-2 px-3 text-sm font-medium transition-colors',
+              isActive ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <Icon className="size-4" />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+      <Outlet />
     </div>
   )
 }

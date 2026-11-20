@@ -2,6 +2,7 @@ import { IndexRoutes } from "./routes"
 import { toast, Toaster } from 'sonner'
 import { QueryClientProvider, QueryClient, QueryCache, MutationCache } from '@tanstack/react-query'
 import { ThemeProvider } from "./components/theme-provider"
+import { TooltipProvider } from "./components/ui/tooltip"
 import { isAxiosError } from "axios"
 import { authSlice } from "./store/auth"
 
@@ -11,14 +12,14 @@ const client = new QueryClient({
       onError: (error) => {
         if (isAxiosError(error)) {
           if (error && error?.response && error?.response.status >= 500) {
-            toast.error('A server error occurred. Please try again later.');
+            toast.error('O servidor encontrou um erro. Tente novamente em instantes.');
           }
 
           else if (error && error.response && error.response.status === 401) {
             // The API client already tried to refresh the session: it is really over
             authSlice.getState().signout()
           } else {
-            toast.error('Something went wrong with fetching data.');
+            toast.error('Não foi possível carregar os dados.');
           }
         }
       },
@@ -50,8 +51,10 @@ function App() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={client}>
-        <Toaster richColors />
-        <IndexRoutes />
+        <TooltipProvider delayDuration={300}>
+          <Toaster richColors />
+          <IndexRoutes />
+        </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )

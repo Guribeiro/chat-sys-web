@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
@@ -9,6 +8,8 @@ import { fetchChannelMemebers } from '@/http/fetch-channel-members';
 import { markChannelRead } from '@/http/mark-channel-read';
 import type { Channel } from '@/http/fetch-channels';
 import { CreateMessageForm } from './create-message-form';
+import { ChatHeader } from './chat-header';
+import { TypingIndicator } from './typing-indicator';
 import { MessagesList } from './messages-list';
 import { appendMessage, markMessageDeleted, messagesQueryKey, patchMessage } from './messages-cache';
 import { ChatContext } from './chat-context';
@@ -84,7 +85,7 @@ export const Chat = () => {
     clearTimeout(markReadTimer.current)
     markChannelRead({ slug: targetSlug }).catch(() => { /* best effort */ })
     queryClient.setQueryData<Channel[]>(['channels'], (channels) =>
-      channels?.map(channel => (channel.slug === targetSlug ? { ...channel, unreadCount: 0 } : channel)),
+      channels?.map(channel => (channel.slug === targetSlug ? { ...channel, unreadCount: 0, unreadMentionCount: 0 } : channel)),
     )
   }, [queryClient])
 
@@ -244,11 +245,27 @@ export const Chat = () => {
     stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < STICK_TO_BOTTOM_PX
   }
 
-  const loadOlder = () => {
+  const loadOlder = useCallback(() => {
     const el = scrollRef.current
     if (el) olderAnchorRef.current = { height: el.scrollHeight, top: el.scrollTop }
     fetchNextPage()
-  }
+  }, [fetchNextPage])
+
+  // ---- "New messages" divider -------------------------------------------------------------
+  // Read during render, before the effect above zeroes the badge for this channel
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const unreadAtOpen = useMemo(() => queryClient.getQueryData<Channel[]>(['channels'])?.find(channel => channel.slug === slug)?.unreadCount ?? 0, [slug])
+  const [firstUnread, setFirstUnread] = useState<{ slug: string; id: string | null } | null>(null)
+  useEffect(() => {
+    if (!slug || !allMessages.length || firstUnread?.slug === slug) return
+    let id: string | null = null
+    if (unreadAtOpen > 0) {
+      const fromOthers = allMessages.filter(message => message.authorId !== userId)
+      id = fromOthers[Math.max(0, fromOthers.length - unreadAtOpen)]?.id ?? null
+    }
+    setFirstUnread({ slug, id })
+  }, [slug, allMessages, firstUnread?.slug, unreadAtOpen, userId])
+  const firstUnreadId = firstUnread?.slug === slug ? firstUnread.id : null
 
   const typingText = formatTyping(typing)
 
@@ -260,8 +277,11 @@ export const Chat = () => {
       return
     }
     element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    element.classList.add('bg-amber-200/40')
-    setTimeout(() => element.classList.remove('bg-amber-200/40'), 1500)
+    element.classList.remove('message-flash')
+    // Restart the animation even when the same message is flashed twice in a row
+    void element.offsetWidth
+    element.classList.add('message-flash')
+    setTimeout(() => element.classList.remove('message-flash'), 1700)
   }, [])
 
   // Arriving from search: walk back through older pages until the message is loaded
@@ -297,39 +317,34 @@ export const Chat = () => {
 
   return (
     <ChatContext.Provider value={chatContext}>
-    <div className="w-full ">
-      <div className="w-full mx-auto ">
-        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-          <Card className="lg:col-span-4 flex flex-col h-[600px]">
-            <CardContent
-              ref={scrollRef}
-              onScroll={handleScroll}
-              className="flex-1 overflow-y-auto p-4 space-y-1"
-            >
-              <MessagesList
-                messages={allMessages}
-                error={errorMessage}
-                loading={isFetching && !allMessages.length}
-                loadingOlder={isFetchingNextPage}
-                hasOlder={hasNextPage}
-                onLoadOlder={loadOlder}
-              />
-            </CardContent>
-            <div className="h-5 px-4 text-xs text-muted-foreground italic" aria-live="polite">
-              {typingText}
-            </div>
-            {!errorMessage && (
-              <CreateMessageForm
-                channelId={channelId}
-                members={mentionUsers}
-                replyTo={replyTo}
-                onCancelReply={() => setReplyTo(null)}
-              />
-            )}
-          </Card>
+      <div className="flex h-full min-w-0 flex-col">
+        <ChatHeader slug={slug} memberCount={members?.length} canModerate={isAdmin} />
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        >
+          <MessagesList
+            messages={allMessages}
+            error={errorMessage}
+            loading={isFetching && !allMessages.length}
+            loadingOlder={isFetchingNextPage}
+            hasOlder={hasNextPage}
+            onLoadOlder={loadOlder}
+            scrollRoot={scrollRef}
+            firstUnreadId={firstUnreadId}
+          />
         </div>
+        <TypingIndicator text={typingText} />
+        {!errorMessage && (
+          <CreateMessageForm
+            channelId={channelId}
+            members={mentionUsers}
+            replyTo={replyTo}
+            onCancelReply={() => setReplyTo(null)}
+          />
+        )}
       </div>
-    </div>
     </ChatContext.Provider>
   );
 };

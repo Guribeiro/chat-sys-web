@@ -8,6 +8,8 @@ import { Button } from '../ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { UserAvatar } from '../user-avatar'
+import { useLayout } from '@/store/layout'
+import { SEARCH_SHORTCUT } from '@/lib/platform'
 
 const DEBOUNCE_MS = 250
 
@@ -20,7 +22,7 @@ function Highlighted({ text }: { text: string }) {
         const [match, rest] = part.split('\u0002')
         return (
           <Fragment key={index}>
-            <mark className="rounded bg-amber-200 px-0.5 text-amber-950">{match}</mark>
+            <mark className="rounded-sm bg-mention px-0.5 text-mention-foreground">{match}</mark>
             {rest}
           </Fragment>
         )
@@ -39,7 +41,8 @@ function useDebounced<T>(value: T, delay: number) {
 }
 
 export function SearchPalette() {
-  const [open, setOpen] = useState(false)
+  const open = useLayout(state => state.searchOpen)
+  const setOpen = useLayout(state => state.setSearchOpen)
   const [query, setQuery] = useState('')
   const term = useDebounced(query.trim(), DEBOUNCE_MS)
   const navigate = useNavigate()
@@ -54,7 +57,7 @@ export function SearchPalette() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
+  }, [setOpen])
 
   const { data, isFetching } = useQuery({
     queryKey: ['search', term],
@@ -71,15 +74,26 @@ export function SearchPalette() {
   return (
     <>
       <Button
-        variant="outline"
+        variant="ghost"
+        size="icon"
         onClick={() => setOpen(true)}
-        className="gap-2 text-muted-foreground"
+        className="text-muted-foreground hover:text-foreground md:hidden"
         aria-label="Buscar mensagens"
       >
-        <Search className="h-4 w-4" />
-        <span className="hidden lg:inline">Buscar</span>
-        <kbd className="hidden rounded border bg-muted px-1.5 font-mono text-[10px] lg:inline">Ctrl K</kbd>
+        <Search className="size-4" />
       </Button>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Buscar mensagens"
+        className="hidden h-9 w-full max-w-md items-center gap-2 rounded-md border bg-muted/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring md:flex"
+      >
+        <Search className="size-4 shrink-0" />
+        <span className="flex-1 truncate text-left">Buscar mensagens</span>
+        <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[11px] leading-none text-muted-foreground">
+          {SEARCH_SHORTCUT}
+        </kbd>
+      </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="overflow-hidden p-0 sm:max-w-xl">

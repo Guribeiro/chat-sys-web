@@ -12,6 +12,10 @@ export type Channel = {
   }
   /** Messages from other members since my last read */
   unreadCount?: number
+  /** Unread messages that mention me or reply to me (shown even when muted) */
+  unreadMentionCount?: number
+  /** Muted channels only notify for mentions and replies */
+  muted?: boolean
   type?: 'GROUP' | 'DIRECT'
   /** DM only: the other participant */
   peer?: { id: string; name: string; email: string; avatarUrl?: string | null } | null

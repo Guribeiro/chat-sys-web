@@ -35,30 +35,19 @@ export const IndexRoutes = () => {
             <Route
               element={<PrivateRoute />}
             >
-              <Route
-                path="/channels"
-                element={
-                  <PageTransition>
-                    <ChannelsPage />
-                  </PageTransition>
-                }
-              >
-                <Route
-                  path="/channels/:slug"
-                  element={
-                    <PageTransition>
-                      <Chat />
-                    </PageTransition>
-                  }
-                />
+              {/* The chat swaps channels in place: no page transition there */}
+              <Route path="/channels" element={<ChannelsPage />}>
+                <Route path="/channels/:slug" element={<Chat />} />
               </Route>
 
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
 
               <Route
                 path="/admin"
                 element={
-                  <Admin />
+                  <PageTransition>
+                    <Admin />
+                  </PageTransition>
                 }
               >
                 <Route
