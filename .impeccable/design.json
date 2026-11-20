@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T00:27:21.097945+00:00",
+  "title": "Design System: Realtime chat",
+  "extensions": {
+    "colorMeta": {
+      "signal-green": {
+        "role": "primary",
+        "displayName": "Signal Green",
+        "canonical": "oklch(0.56 0.15 152)",
+        "tonalRamp": [
+          "oklch(0.15 0.074 152)",
+          "oklch(0.26 0.095 152)",
+          "oklch(0.37 0.116 152)",
+          "oklch(0.48 0.137 152)",
+          "oklch(0.60 0.140 152)",
+          "oklch(0.72 0.118 152)",
+          "oklch(0.84 0.095 152)",
+          "oklch(0.95 0.074 152)"
+        ]
+      },
+      "bubble-own": {
+        "role": "primary",
+        "displayName": "Own Bubble Green",
+        "canonical": "oklch(0.53 0.14 153)",
+        "tonalRamp": [
+          "oklch(0.15 0.069 153)",
+          "oklch(0.26 0.088 153)",
+          "oklch(0.37 0.108 153)",
+          "oklch(0.48 0.128 153)",
+          "oklch(0.60 0.131 153)",
+          "oklch(0.72 0.110 153)",
+          "oklch(0.84 0.088 153)",
+          "oklch(0.95 0.069 153)"
+        ]
+      },
+      "focus-green": {
+        "role": "primary",
+        "displayName": "Focus Green",
+        "canonical": "oklch(0.62 0.16 152)",
+        "tonalRamp": [
+          "oklch(0.15 0.079 152)",
+          "oklch(0.26 0.101 152)",
+          "oklch(0.37 0.123 152)",
+          "oklch(0.48 0.146 152)",
+          "oklch(0.60 0.150 152)",
+          "oklch(0.72 0.125 152)",
+          "oklch(0.84 0.101 152)",
+          "oklch(0.95 0.079 152)"
+        ]
+      },
+      "mention-amber": {
+        "role": "secondary",
+        "displayName": "Mention Amber",
+        "canonical": "oklch(0.93 0.08 85)",
+        "tonalRamp": [
+          "oklch(0.15 0.039 85)",
+          "oklch(0.26 0.050 85)",
+          "oklch(0.37 0.062 85)",
+          "oklch(0.48 0.073 85)",
+          "oklch(0.60 0.075 85)",
+          "oklch(0.72 0.063 85)",
+          "oklch(0.84 0.050 85)",
+          "oklch(0.95 0.039 85)"
+        ]
+      },
+      "alert-red": {
+        "role": "tertiary",
+        "displayName": "Alert Red",
+        "canonical": "oklch(0.577 0.245 27.3)",
+        "tonalRamp": [
+          "oklch(0.15 0.120 27.3)",
+          "oklch(0.26 0.155 27.3)",
+          "oklch(0.37 0.189 27.3)",
+          "oklch(0.48 0.223 27.3)",
+          "oklch(0.60 0.229 27.3)",
+          "oklch(0.72 0.192 27.3)",
+          "oklch(0.84 0.155 27.3)",
+          "oklch(0.95 0.120 27.3)"
+        ]
+      },
+      "online": {
+        "role": "tertiary",
+        "displayName": "Online",
+        "canonical": "oklch(0.65 0.17 150)",
+        "tonalRamp": [
+          "oklch(0.15 0.083 150)",
+          "oklch(0.26 0.107 150)",
+          "oklch(0.37 0.131 150)",
+          "oklch(0.48 0.155 150)",
+          "oklch(0.60 0.159 150)",
+          "oklch(0.72 0.133 150)",
+          "oklch(0.84 0.107 150)",
+          "oklch(0.95 0.083 150)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.15 0.000 0)",
+          "oklch(0.26 0.000 0)",
+          "oklch(0.37 0.000 0)",
+          "oklch(0.48 0.000 0)",
+          "oklch(0.60 0.000 0)",
+          "oklch(0.72 0.000 0)",
+          "oklch(0.84 0.000 0)",
+          "oklch(0.95 0.000 0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.141 0.005 285.8)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 285.8)",
+          "oklch(0.26 0.003 285.8)",
+          "oklch(0.37 0.004 285.8)",
+          "oklch(0.48 0.005 285.8)",
+          "oklch(0.60 0.005 285.8)",
+          "oklch(0.72 0.004 285.8)",
+          "oklch(0.84 0.003 285.8)",
+          "oklch(0.95 0.002 285.8)"
+        ]
+      },
+      "shelf": {
+        "role": "neutral",
+        "displayName": "Shelf",
+        "canonical": "oklch(0.975 0.003 286)",
+        "tonalRamp": [
+          "oklch(0.15 0.001 286)",
+          "oklch(0.26 0.002 286)",
+          "oklch(0.37 0.002 286)",
+          "oklch(0.48 0.003 286)",
+          "oklch(0.60 0.003 286)",
+          "oklch(0.72 0.002 286)",
+          "oklch(0.84 0.002 286)",
+          "oklch(0.95 0.001 286)"
+        ]
+      },
+      "shelf-selected": {
+        "role": "neutral",
+        "displayName": "Shelf Selected",
+        "canonical": "oklch(0.93 0.004 286)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 286)",
+          "oklch(0.26 0.003 286)",
+          "oklch(0.37 0.003 286)",
+          "oklch(0.48 0.004 286)",
+          "oklch(0.60 0.004 286)",
+          "oklch(0.72 0.003 286)",
+          "oklch(0.84 0.003 286)",
+          "oklch(0.95 0.002 286)"
+        ]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "oklch(0.967 0.001 286.4)",
+        "tonalRamp": [
+          "oklch(0.15 0.000 286.4)",
+          "oklch(0.26 0.001 286.4)",
+          "oklch(0.37 0.001 286.4)",
+          "oklch(0.48 0.001 286.4)",
+          "oklch(0.60 0.001 286.4)",
+          "oklch(0.72 0.001 286.4)",
+          "oklch(0.84 0.001 286.4)",
+          "oklch(0.95 0.000 286.4)"
+        ]
+      },
+      "graphite": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "canonical": "oklch(0.552 0.016 285.9)",
+        "tonalRamp": [
+          "oklch(0.15 0.008 285.9)",
+          "oklch(0.26 0.010 285.9)",
+          "oklch(0.37 0.012 285.9)",
+          "oklch(0.48 0.015 285.9)",
+          "oklch(0.60 0.015 285.9)",
+          "oklch(0.72 0.013 285.9)",
+          "oklch(0.84 0.010 285.9)",
+          "oklch(0.95 0.008 285.9)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.92 0.004 286.3)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 286.3)",
+          "oklch(0.26 0.003 286.3)",
+          "oklch(0.37 0.003 286.3)",
+          "oklch(0.48 0.004 286.3)",
+          "oklch(0.60 0.004 286.3)",
+          "oklch(0.72 0.003 286.3)",
+          "oklch(0.84 0.003 286.3)",
+          "oklch(0.95 0.002 286.3)"
+        ]
+      },
+      "bubble-other": {
+        "role": "neutral",
+        "displayName": "Bubble Other",
+        "canonical": "oklch(0.955 0.004 286)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 286)",
+          "oklch(0.26 0.003 286)",
+          "oklch(0.37 0.003 286)",
+          "oklch(0.48 0.004 286)",
+          "oklch(0.60 0.004 286)",
+          "oklch(0.72 0.003 286)",
+          "oklch(0.84 0.003 286)",
+          "oklch(0.95 0.002 286)"
+        ]
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Night",
+        "canonical": "oklch(0.141 0.005 285.8)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 285.8)",
+          "oklch(0.26 0.003 285.8)",
+          "oklch(0.37 0.004 285.8)",
+          "oklch(0.48 0.005 285.8)",
+          "oklch(0.60 0.005 285.8)",
+          "oklch(0.72 0.004 285.8)",
+          "oklch(0.84 0.003 285.8)",
+          "oklch(0.95 0.002 285.8)"
+        ]
+      },
+      "night-shelf": {
+        "role": "neutral",
+        "displayName": "Night Shelf",
+        "canonical": "oklch(0.17 0.005 286)",
+        "tonalRamp": [
+          "oklch(0.15 0.002 286)",
+          "oklch(0.26 0.003 286)",
+          "oklch(0.37 0.004 286)",
+          "oklch(0.48 0.005 286)",
+          "oklch(0.60 0.005 286)",
+          "oklch(0.72 0.004 286)",
+          "oklch(0.84 0.003 286)",
+          "oklch(0.95 0.002 286)"
+        ]
+      },
+      "night-raised": {
+        "role": "neutral",
+        "displayName": "Night Raised",
+        "canonical": "oklch(0.274 0.006 286)",
+        "tonalRamp": [
+          "oklch(0.15 0.003 286)",
+          "oklch(0.26 0.004 286)",
+          "oklch(0.37 0.005 286)",
+          "oklch(0.48 0.005 286)",
+          "oklch(0.60 0.006 286)",
+          "oklch(0.72 0.005 286)",
+          "oklch(0.84 0.004 286)",
+          "oklch(0.95 0.003 286)"
+        ]
+      },
+      "night-graphite": {
+        "role": "neutral",
+        "displayName": "Night Graphite",
+        "canonical": "oklch(0.705 0.015 286.1)",
+        "tonalRamp": [
+          "oklch(0.15 0.007 286.1)",
+          "oklch(0.26 0.009 286.1)",
+          "oklch(0.37 0.012 286.1)",
+          "oklch(0.48 0.014 286.1)",
+          "oklch(0.60 0.014 286.1)",
+          "oklch(0.72 0.012 286.1)",
+          "oklch(0.84 0.009 286.1)",
+          "oklch(0.95 0.007 286.1)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Auth side-panel statement only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Channel header name, section headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Message text and all form/list content."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Sender names, nav section labels, dividers, hints."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Timestamps inside bubbles, tabular figures."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Code spans and blocks inside messages only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "rest-lift",
+        "value": "0 1px 2px rgb(0 0 0 / 0.04)",
+        "purpose": "Composer at rest."
+      },
+      {
+        "name": "control-lift",
+        "value": "0 1px 2px rgb(0 0 0 / 0.08)",
+        "purpose": "Selected segment of a segmented control."
+      },
+      {
+        "name": "floating-toolbar",
+        "value": "0 1px 2px rgb(0 0 0 / 0.06), 0 2px 8px -2px rgb(0 0 0 / 0.08)",
+        "purpose": "Message action bar."
+      },
+      {
+        "name": "popover",
+        "value": "0 4px 16px -4px rgb(0 0 0 / 0.15)",
+        "purpose": "Mention suggestions and anchored menus."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default easing for state changes, collapsibles, page fade, message flash."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Hover, color and opacity changes."
+      },
+      {
+        "name": "duration-base",
+        "value": "200-240ms",
+        "purpose": "Collapsible sections, page entrance (6px rise + fade)."
+      },
+      {
+        "name": "typing-dots",
+        "value": "1.2s ease-in-out infinite, 150ms stagger",
+        "purpose": "Typing indicator only."
+      },
+      {
+        "name": "message-flash",
+        "value": "1.6s ease-out highlight fade",
+        "purpose": "Jump-to-message from replies and search."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "list→conversation split; nav column appears"
+      },
+      {
+        "name": "xl",
+        "value": "1280px",
+        "purpose": "members panel appears"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action of a view: Entrar, Criar canal, Salvar.",
+      "html": "<button class=\"ds-btn-primary\">Criar canal</button>",
+      "css": ".ds-btn-primary { font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; gap:8px; height:40px; padding:8px 16px; border:0; border-radius:6px; background:var(--primary); color:var(--primary-foreground); font-size:14px; font-weight:500; cursor:pointer; transition: background-color .15s cubic-bezier(.16,1,.3,1); } .ds-btn-primary:hover { background: color-mix(in oklch, var(--primary) 90%, transparent); } .ds-btn-primary:focus-visible { outline:2px solid var(--ring); outline-offset:2px; } .ds-btn-primary:active { transform: scale(.98); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action next to a primary one.",
+      "html": "<button class=\"ds-btn-outline\">Cancelar</button>",
+      "css": ".ds-btn-outline { font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif; height:40px; padding:8px 16px; border:1px solid var(--border); border-radius:6px; background:var(--background); color:var(--foreground); font-size:14px; font-weight:500; cursor:pointer; transition: background-color .15s; } .ds-btn-outline:hover { background:var(--accent); } .ds-btn-outline:focus-visible { outline:2px solid var(--ring); outline-offset:2px; }"
+    },
+    {
+      "name": "Ghost Icon Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Header and toolbar icons.",
+      "html": "<button class=\"ds-btn-ghost\" aria-label=\"Alterar tema\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/></svg></button>",
+      "css": ".ds-btn-ghost { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border:0; border-radius:6px; background:transparent; color:var(--muted-foreground); cursor:pointer; transition: background-color .15s, color .15s; } .ds-btn-ghost:hover { background:var(--accent); color:var(--foreground); } .ds-btn-ghost:focus-visible { outline:2px solid var(--ring); outline-offset:2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form fields across auth, profile and admin.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"voce@empresa.com\" />",
+      "css": ".ds-input { font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif; width:280px; height:40px; padding:8px 12px; border:1px solid var(--input); border-radius:6px; background:var(--background); color:var(--foreground); font-size:14px; transition: border-color .15s, box-shadow .15s; } .ds-input::placeholder { color:var(--muted-foreground); } .ds-input:focus-visible { outline:none; border-color:var(--ring); box-shadow:0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Channel and DM list rows with active and unread states.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item is-active\" href=\"#\"><span class=\"ds-hash\">#</span>Projeto Atlas</a><a class=\"ds-nav-item is-unread\" href=\"#\"><span class=\"ds-hash\">#</span>Geral<span class=\"ds-badge\">12</span></a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-hash\">#</span>Marketing</a></nav>",
+      "css": ".ds-nav { font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif; width:240px; padding:8px; background:var(--sidebar); display:flex; flex-direction:column; gap:1px; } .ds-nav-item { display:flex; align-items:center; gap:8px; height:32px; padding:0 8px; border-radius:6px; font-size:14px; color:var(--muted-foreground); text-decoration:none; transition: background-color .15s, color .15s; } .ds-nav-item:hover { background: color-mix(in oklch, var(--sidebar-accent) 60%, transparent); color:var(--foreground); } .ds-nav-item:focus-visible { outline:2px solid var(--ring); } .ds-nav-item.is-active { background:var(--sidebar-accent); color:var(--foreground); font-weight:500; } .ds-nav-item.is-active .ds-hash { color:var(--primary); opacity:1; } .ds-nav-item.is-unread { color:var(--foreground); font-weight:600; } .ds-hash { width:16px; text-align:center; opacity:.7; } .ds-badge { margin-left:auto; min-width:16px; padding:0 6px; border-radius:9999px; background:var(--unread); color:var(--unread-foreground); font-size:10px; font-weight:600; line-height:16px; font-variant-numeric:tabular-nums; }"
+    },
+    {
+      "name": "Message Bubbles",
+      "kind": "custom",
+      "refersTo": "bubble-other",
+      "description": "Others' message (left, neutral) and own message (right, green) with in-bubble timestamp.",
+      "html": "<div class=\"ds-thread\"><div class=\"ds-msg\"><p class=\"ds-author\">Heloísa Reis</p><div class=\"ds-bubble ds-other\">Subi o layout novo do onboarding<span class=\"ds-time\">15:56</span></div></div><div class=\"ds-msg ds-mine\"><div class=\"ds-bubble ds-own\">Ficou ótimo! <span class=\"ds-mention\">@Gabriel</span> dá uma olhada?<span class=\"ds-time\">15:58</span></div></div></div>",
+      "css": ".ds-thread { font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif; width:420px; display:flex; flex-direction:column; gap:12px; } .ds-msg { display:flex; flex-direction:column; align-items:flex-start; } .ds-mine { align-items:flex-end; } .ds-author { margin:0 0 4px 4px; font-size:12px; font-weight:500; color:var(--muted-foreground); } .ds-bubble { max-width:82%; padding:8px 14px; border-radius:16px; font-size:14px; line-height:1.625; } .ds-other { background:var(--bubble-other); color:var(--bubble-other-foreground); border-bottom-left-radius:6px; } .ds-own { background:var(--bubble-own); color:var(--bubble-own-foreground); border-bottom-right-radius:6px; } .ds-time { display:block; margin-top:2px; font-size:11px; opacity:.7; font-variant-numeric:tabular-nums; text-align:right; } .ds-mention { padding:0 4px; border-radius:4px; background:rgb(255 255 255 / .2); font-weight:500; }"
+    },
+    {
+      "name": "Reaction Pills",
+      "kind": "chip",
+      "refersTo": "",
+      "description": "Emoji reactions; own reaction tinted green.",
+      "html": "<div class=\"ds-reactions\"><button class=\"ds-pill is-mine\">❤️ <b>3</b></button><button class=\"ds-pill\">🎉 <b>1</b></button></div>",
+      "css": ".ds-reactions { font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif; display:flex; gap:4px; } .ds-pill { display:flex; align-items:center; gap:4px; height:24px; padding:0 8px; border:1px solid var(--border); border-radius:9999px; background:var(--background); color:var(--foreground); font-size:12px; cursor:pointer; transition: background-color .15s; } .ds-pill b { font-weight:500; font-variant-numeric:tabular-nums; } .ds-pill:hover { background:var(--muted); } .ds-pill.is-mine { border-color: color-mix(in oklch, var(--primary) 50%, transparent); background: color-mix(in oklch, var(--primary) 10%, transparent); } .ds-pill:focus-visible { outline:2px solid var(--ring); outline-offset:2px; }"
+    },
+    {
+      "name": "Composer",
+      "kind": "custom",
+      "refersTo": "composer",
+      "description": "Single-surface message composer: attach, auto-growing text, send.",
+      "html": "<form class=\"ds-composer\"><button type=\"button\" class=\"ds-attach\" aria-label=\"Anexar arquivos\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/></svg></button><textarea rows=\"1\" placeholder=\"Mensagem para #Projeto Atlas\"></textarea><button class=\"ds-send\" aria-label=\"Enviar mensagem\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 2-7 20-4-9-9-4Z\"/><path d=\"M22 2 11 13\"/></svg></button></form>",
+      "css": ".ds-composer { font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif; width:520px; display:flex; align-items:flex-end; gap:4px; padding:6px; border:1px solid var(--border); border-radius:12px; background:var(--background); box-shadow:0 1px 2px rgb(0 0 0 / .04); transition: border-color .15s, box-shadow .15s; } .ds-composer:focus-within { border-color:var(--ring); box-shadow:0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent); } .ds-composer textarea { flex:1; min-height:40px; padding:10px 4px; border:0; background:transparent; color:var(--foreground); font:inherit; font-size:14px; resize:none; outline:none; } .ds-composer textarea::placeholder { color:var(--muted-foreground); } .ds-attach { width:40px; height:40px; border:0; border-radius:6px; background:transparent; color:var(--muted-foreground); cursor:pointer; } .ds-attach:hover { background:var(--accent); color:var(--foreground); } .ds-send { width:40px; height:40px; border:0; border-radius:8px; background:var(--primary); color:var(--primary-foreground); cursor:pointer; transition: transform .15s; } .ds-send:active { transform:scale(.95); } .ds-send:focus-visible, .ds-attach:focus-visible { outline:2px solid var(--ring); outline-offset:2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Well-Lit Office",
+    "overview": "**Creative North Star: \"The Well-Lit Office\"**\n\nRealtime chat is a workplace you spend the whole day in, so it is built like a good office: evenly lit, orderly, nothing competing for your eye until something genuinely needs you. Surfaces are quiet neutrals with the faintest violet-gray cast; structure comes from hairline borders and two or three tonal steps, not from boxes, shadows or color. The interface should disappear while you read and reappear, precisely, when you act.\n\nColor is a signal, not decoration. One green — Signal Green, the color of \"online\" and \"new\" — marks what is yours or what is waiting: your own messages, the unread count, the active channel's mark, the primary action. Amber is reserved for the one thing more urgent than \"new\": someone called you by name. Everything else is ink on paper. Dark mode is the same office at night: the same hierarchy, lower luminance, never a different personality.\n\nDensity is moderate and work-grade. Lists are tight (32px rows on desktop), conversation text is relaxed (1.625 line height) because it is read continuously, and the layout behaves like a tool: fixed header, fixed navigation, only the conversation scrolls.",
+    "keyCharacteristics": [
+      "Quiet neutral surfaces; depth by tone and hairlines, shadows only on things that float.",
+      "A single functional accent (Signal Green) plus amber for mentions and red for destruction.",
+      "One typeface (Geist) carrying every role through size and weight.",
+      "Restrained, precise components: flat at rest, crisp focus, short ease-out motion.",
+      "Equal care for light and dark, desktop and phone."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Rule",
+        "body": "Green means \"yours\" or \"waiting for you\" — never decoration. If an element is green, the user must be able to say which of those two it is.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Alarm Rule",
+        "body": "Amber is only for being addressed by name; red is only for destruction and \"you missed something\". Neither appears as a general accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tinted Overlay Rule",
+        "body": "Secondary text on a colored surface (own bubble, mention row) is the surface's own foreground at reduced opacity, never a gray.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Eyebrow Rule",
+        "body": "Headings stand alone; no small uppercase label above a heading. Nav section labels are sentence-case labels, not kickers.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Count Rule",
+        "body": "Every number that can change live — unread badges, member counts, reaction counts, timestamps — uses tabular figures so updates never jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The Only The Conversation Moves Rule",
+        "body": "Live updates (new messages, typing, presence) never shift the reading position: the typing line has a fixed 24px height and older pages are prepended with the scroll anchor preserved.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "Cards, list rows, bubbles and panels carry no shadow. If you reach for a shadow on something that does not float, use a tonal step or a hairline instead.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Focus Halo Rule",
+        "body": "Focus is shown with a solid ring or border in Focus Green plus a soft 3px ring at 20% — never with a shadow alone.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** take every color from the semantic tokens in `src/index.css` (`bg-primary`, `bg-bubble-own`, `text-muted-foreground`, `bg-mention`, `bg-online`, `bg-unread`…) so both themes stay correct.",
+      "**Do** keep the signed-in app at `100dvh` with only the message list scrolling.",
+      "**Do** use a tonal step (Shelf, Mist) or a hairline before reaching for a border-heavy box or a shadow.",
+      "**Do** give every live number tabular figures and every icon-only control an accessible label.",
+      "**Do** design loading (skeletons shaped like the content), empty (icon disc + one line of guidance + an action when there is one) and error states for every list.",
+      "**Do** keep motion short and ease-out (150–240ms, `cubic-bezier(0.16, 1, 0.3, 1)`) and honor `prefers-reduced-motion`.",
+      "**Do** write all UI copy in pt-BR."
+    ],
+    "donts": [
+      "**Don't** use raw Tailwind palette colors (`gray-*`, `green-*`, `red-*`, `bg-white`) outside `components/ui`; they break dark mode. White text is allowed only on dark scrims and the destructive fill.",
+      "**Don't** use gradients on buttons or bubbles.",
+      "**Don't** pulse, bounce or animate status indicators; presence is a static dot.",
+      "**Don't** wrap app regions in cards or nest cards; the workspace is columns separated by hairlines.",
+      "**Don't** add page-transition motion inside the chat; switching channels is instant.",
+      "**Don't** apply `capitalize` to user-entered names or channel titles; render them as stored."
+    ]
+  }
+}

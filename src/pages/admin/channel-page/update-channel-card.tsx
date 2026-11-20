@@ -102,10 +102,10 @@ export function UpdateChannelCard({ channel, error, loading }: ChannelStatusCard
 
 
   return (
-    <Card className="bg-background flex flex-col lg:flex-row lg:items-center lg:justify-between">
+    <Card className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
       <CardHeader>
-        <CardTitle className="text-foreground text-sm lg:text-xl">Renomear canal</CardTitle>
-        <CardDescription className="text-foreground/50 text-xs lg:text-base">Canais podem ser renomeados.</CardDescription>
+        <CardTitle className="text-base">Renomear canal</CardTitle>
+        <CardDescription>Nome e descrição aparecem para todos os membros.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

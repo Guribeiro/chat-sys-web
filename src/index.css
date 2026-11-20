@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
 @plugin "tailwindcss-animate";
 
@@ -7,8 +9,18 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+  --color-bubble-own: var(--bubble-own);
+  --color-bubble-own-foreground: var(--bubble-own-foreground);
+  --color-bubble-other: var(--bubble-other);
+  --color-bubble-other-foreground: var(--bubble-other-foreground);
+  --color-mention: var(--mention);
+  --color-mention-foreground: var(--mention-foreground);
+  --color-highlight: var(--highlight);
+  --color-online: var(--online);
+  --color-unread: var(--unread);
+  --color-unread-foreground: var(--unread-foreground);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -51,8 +63,9 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.723 0.219 149.579);
-  --primary-foreground: oklch(0.982 0.018 155.826);
+  /* Deeper than the shadcn default so white text on it passes AA */
+  --primary: oklch(0.56 0.15 152);
+  --primary-foreground: oklch(0.99 0.01 155);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.967 0.001 286.375);
@@ -62,20 +75,31 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.723 0.219 149.579);
+  --ring: oklch(0.62 0.16 152);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.975 0.003 286);
   --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.723 0.219 149.579);
-  --sidebar-primary-foreground: oklch(0.982 0.018 155.826);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-primary: oklch(0.56 0.15 152);
+  --sidebar-primary-foreground: oklch(0.99 0.01 155);
+  --sidebar-accent: oklch(0.93 0.004 286);
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.723 0.219 149.579);
+  --sidebar-ring: oklch(0.62 0.16 152);
+
+  --bubble-own: oklch(0.53 0.14 153);
+  --bubble-own-foreground: oklch(0.99 0.01 155);
+  --bubble-other: oklch(0.955 0.004 286);
+  --bubble-other-foreground: oklch(0.2 0.006 286);
+  --mention: oklch(0.93 0.08 85);
+  --mention-foreground: oklch(0.35 0.08 60);
+  --highlight: oklch(0.88 0.12 90 / 45%);
+  --online: oklch(0.65 0.17 150);
+  --unread: oklch(0.56 0.15 152);
+  --unread-foreground: oklch(0.99 0.01 155);
 }
 
 .dark {
@@ -102,7 +126,7 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar: oklch(0.17 0.005 286);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.696 0.17 162.48);
   --sidebar-primary-foreground: oklch(0.393 0.095 152.535);
@@ -110,6 +134,17 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.527 0.154 150.069);
+
+  --bubble-own: oklch(0.42 0.1 158);
+  --bubble-own-foreground: oklch(0.97 0.01 155);
+  --bubble-other: oklch(0.235 0.006 286);
+  --bubble-other-foreground: oklch(0.95 0 0);
+  --mention: oklch(0.38 0.07 80);
+  --mention-foreground: oklch(0.93 0.07 88);
+  --highlight: oklch(0.6 0.1 90 / 30%);
+  --online: oklch(0.72 0.16 155);
+  --unread: oklch(0.696 0.17 162.48);
+  --unread-foreground: oklch(0.2 0.04 160);
 }
 
 @layer utilities {
@@ -129,7 +164,75 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
+  html {
+    color-scheme: light;
   }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+    caret-color: var(--primary);
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 28%, transparent);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 18%, transparent) transparent;
+  }
+  :focus-visible {
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Typing indicator dots */
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+.typing-dot {
+  animation: typing-dot 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* Message flash when jumping to it from a reply or search */
+@keyframes message-flash {
+  from { background-color: var(--highlight); }
+  to { background-color: transparent; }
+}
+.message-flash {
+  animation: message-flash 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Radix collapsible height animation */
+@keyframes collapsible-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-collapsible-content-height); opacity: 1; }
+}
+@keyframes collapsible-up {
+  from { height: var(--radix-collapsible-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+.collapsible-content[data-state='open'] {
+  animation: collapsible-down 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.collapsible-content[data-state='closed'] {
+  animation: collapsible-up 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }

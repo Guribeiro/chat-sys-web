@@ -7,7 +7,6 @@ import { handleAxiosError } from "@/lib/axios-error-handler";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { AlertCircleIcon, Users } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminChannelMemberForm } from "./admin-channel-member-form";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -63,32 +62,27 @@ export function AdminChannelMembers() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-baseline justify-between">
-        <h3 className="text-xl font-semibold">Membros do canal</h3>
+      <h2 className="sr-only">Membros do canal</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">
+          <span className="font-medium text-foreground tabular">{data.length}</span> {data.length === 1 ? 'membro' : 'membros'}
+        </p>
+        <AdminChannelMemberForm memberIds={data.map(member => member.memberId)} />
       </div>
 
-      <Card className="bg-background">
-        <CardHeader>
-          <CardTitle className="flex items-baseline justify-between text-foreground text-sm lg:text-xl">
-            <span className="flex-1">Adicionar membro</span>
-            <AdminChannelMemberForm />
-          </CardTitle>
-          <CardDescription className="text-foreground/50 text-xs lg:text-base">Gerencie os membros do canal</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!data.length && !isFetching && (
-            <div className="text-center py-8 text-foreground/50">
-              <Users className="w-6 h-6 text-text-foreground/50 mx-auto mb-3" />
-              <p>Não há membros no canal</p>
-            </div>
-          )}
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {data.map((member) => (
-              <ChannelMemberListItem key={member.id} data={member} />
-            ))}
-          </ul>
-        </CardContent>
-      </Card >
-    </div >
+      {!data.length && !isFetching ? (
+        <div className="flex flex-col items-center rounded-xl border border-dashed px-6 py-14 text-center">
+          <Users className="mb-3 size-5 text-muted-foreground" />
+          <p className="text-sm font-medium">Ninguém neste canal ainda</p>
+          <p className="mt-1 text-sm text-muted-foreground">Convide pessoas para começar a conversa.</p>
+        </div>
+      ) : (
+        <ul className="divide-y overflow-hidden rounded-xl border">
+          {data.map((member) => (
+            <ChannelMemberListItem key={member.id} data={member} />
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }

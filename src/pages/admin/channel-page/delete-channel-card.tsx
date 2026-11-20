@@ -93,10 +93,10 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
 
 
   return (
-    <Card className="bg-background border-red-500 flex flex-col lg:flex-row lg:items-center lg:justify-between">
+    <Card className="flex flex-col border-destructive/40 lg:flex-row lg:items-center lg:justify-between">
       <CardHeader>
-        <CardTitle className="text-red-500 text-sm lg:text-xl">Excluir canal</CardTitle>
-        <CardDescription className="text-red-500 text-xs lg:text-base">O canal, todos os membros e mensagens serão permanentemente excluídos.</CardDescription>
+        <CardTitle className="text-base text-destructive">Excluir canal</CardTitle>
+        <CardDescription>O canal, todos os membros e mensagens serão permanentemente excluídos.</CardDescription>
       </CardHeader>
       <CardContent>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -107,13 +107,13 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
                 <Card className="mt-2">
                   <CardHeader>
                     <div className="flex items-center space-x-3">
-                      <div className="w-7 h-7 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center">
-                        <Hash className="h-3 w-3 text-white" />
+                      <div className="flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                        <Hash className="size-4" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg capitalize">#{channel.title}</CardTitle>
+                        <CardTitle className="text-base">#{channel.title}</CardTitle>
                         {channel.description && (
-                          <p className="text-sm text-foreground/50 mt-1">{channel.description}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{channel.description}</p>
                         )}
                       </div>
                     </div>
@@ -126,7 +126,7 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
             ) : (
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
-                  <p className="text-sm text-foreground/50">Para confirmar, digite o nome do canal "{channel.slug}"</p>
+                  <p className="text-sm text-muted-foreground">Para confirmar, digite o nome do canal "{channel.slug}"</p>
                   <FormField
                     control={form.control}
                     name="title"
@@ -136,7 +136,7 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
                           <Input
                             type="text"
                             required
-                            className="focus-visible:ring-0 focus:border-red-500"
+                            className="focus-visible:border-destructive focus-visible:ring-destructive/20"
                             {...field}
                           />
                         </FormControl>
@@ -146,7 +146,7 @@ export function DeleteChannelCard({ channel, error, loading }: ChannelStatusCard
                   />
                   <Button
                     variant="outline"
-                    className="border-red-500 text-red-500 hover:text-red-500"
+                    className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
                     disabled={title !== channel.slug}
                     type="submit"
                   >

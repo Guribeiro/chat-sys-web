@@ -16,6 +16,7 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { UserAvatar } from '../user-avatar';
 import { useChat } from './chat-context';
+import { useChannel } from '@/hooks/use-channels';
 import { appendMessage, confirmMessage, removeMessage } from './messages-cache';
 import { MAX_ATTACHMENTS, usePendingUploads } from './use-pending-uploads';
 import { getMentionQuery, normalize, toMentionText, toMentionTokens, type MentionUser } from './mentions';
@@ -228,11 +229,16 @@ export function CreateMessageForm({ channelId, members, replyTo, onCancelReply }
     if (files.length) addFiles(files)
   }
 
+  const { channel } = useChannel(slug)
+  const placeholder = channel
+    ? channel.type === 'DIRECT' ? `Mensagem para ${channel.peer?.name ?? 'esta conversa'}` : `Mensagem para #${channel.title}`
+    : 'Escreva uma mensagem'
+
   const replyName = replyTo && (replyTo.authorId === user?.id ? 'você mesmo' : replyTo.author?.name)
 
   return (
     <div
-      className={cn('relative border-t border-foreground/10 p-4', dragging && 'bg-green-50 dark:bg-green-950/30')}
+      className="relative shrink-0 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:px-6 lg:pb-4"
       onDragOver={(event) => {
         if (!event.dataTransfer.types.includes('Files')) return
         event.preventDefault()
@@ -243,176 +249,189 @@ export function CreateMessageForm({ channelId, members, replyTo, onCancelReply }
       }}
       onDrop={handleDrop}
     >
-      {dragging && (
-        <div className="pointer-events-none absolute inset-2 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-green-500 text-sm font-medium text-green-700">
-          Solte os arquivos para anexar
-        </div>
-      )}
-
-      {replyTo && (
-        <div className="mb-2 flex items-start gap-2 rounded-md border bg-muted px-3 py-2 text-xs">
-          <CornerUpLeft className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-600" />
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold">Respondendo a {replyName}</p>
-            <p className="truncate text-muted-foreground">
-              {replyTo.content ? toMentionText(replyTo.content, memberNames) : `📎 ${replyTo.attachments?.length ?? 0} anexo(s)`}
-            </p>
+      <div className={cn(
+        'relative mx-auto max-w-5xl rounded-xl border bg-background transition-[border-color,box-shadow] duration-150',
+        'shadow-[0_1px_2px_rgb(0_0_0/0.04)] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20',
+        dragging && 'border-primary ring-3 ring-primary/20',
+      )}>
+        {dragging && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-xl bg-background/90 text-sm font-medium text-primary">
+            <Paperclip className="size-4" />
+            Solte os arquivos para anexar
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            aria-label="Cancelar resposta"
-            className="h-6 w-6 p-0"
-            onClick={onCancelReply}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+        )}
 
-      {uploads.length > 0 && (
-        <ul className="mb-2 flex flex-wrap gap-2" aria-label="Arquivos anexados">
-          {uploads.map(item => (
-            <li
-              key={item.localId}
-              className={cn(
-                'relative flex h-16 items-center gap-2 overflow-hidden rounded-md border bg-muted text-xs',
-                item.previewUrl ? 'w-16' : 'w-44 px-2',
-                item.error && 'border-destructive',
-              )}
-              title={item.file.name}
+        {replyTo && (
+          <div className="flex items-center gap-2 border-b px-3 py-2 text-xs">
+            <CornerUpLeft className="size-3.5 shrink-0 text-primary" />
+            <div className="min-w-0 flex-1">
+              <span className="font-medium">Respondendo a {replyName}</span>
+              <span className="text-muted-foreground"> · </span>
+              <span className="truncate text-muted-foreground">
+                {replyTo.content ? toMentionText(replyTo.content, memberNames) : `${replyTo.attachments?.length ?? 0} anexo(s)`}
+              </span>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              aria-label="Cancelar resposta"
+              className="size-6 p-0 text-muted-foreground"
+              onClick={onCancelReply}
             >
-              {item.previewUrl
-                ? <img src={item.previewUrl} alt={item.file.name} className="h-full w-full object-cover" />
-                : (
-                  <>
-                    <FileText className="h-5 w-5 shrink-0" />
-                    <span className="truncate">{item.file.name}</span>
-                  </>
+              <X className="size-4" />
+            </Button>
+          </div>
+        )}
+
+        {uploads.length > 0 && (
+          <ul className="flex flex-wrap gap-2 px-3 pt-3" aria-label="Arquivos anexados">
+            {uploads.map(item => (
+              <li
+                key={item.localId}
+                className={cn(
+                  'relative flex h-16 items-center gap-2 overflow-hidden rounded-lg border bg-muted text-xs',
+                  item.previewUrl ? 'w-16' : 'w-44 px-2',
+                  item.error && 'border-destructive',
+                )}
+                title={item.file.name}
+              >
+                {item.previewUrl
+                  ? <img src={item.previewUrl} alt={item.file.name} className="h-full w-full object-cover" />
+                  : (
+                    <>
+                      <FileText className="h-5 w-5 shrink-0" />
+                      <span className="truncate">{item.file.name}</span>
+                    </>
+                  )}
+
+                {!item.attachment && !item.error && (
+                  <span className="absolute inset-x-0 bottom-0 h-1 bg-black/10">
+                    <span className="block h-full bg-primary transition-[width]" style={{ width: `${Math.round(item.progress * 100)}%` }} />
+                  </span>
+                )}
+                {!item.attachment && !item.error && item.previewUrl && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                  </span>
+                )}
+                {item.error && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-destructive/20" aria-label="Falha no envio">
+                    <AlertCircle className="h-5 w-5 text-destructive" />
+                  </span>
                 )}
 
-              {!item.attachment && !item.error && (
-                <span className="absolute inset-x-0 bottom-0 h-1 bg-black/10">
-                  <span className="block h-full bg-green-600 transition-[width]" style={{ width: `${Math.round(item.progress * 100)}%` }} />
-                </span>
-              )}
-              {!item.attachment && !item.error && item.previewUrl && (
-                <span className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <Loader2 className="h-4 w-4 animate-spin text-white" />
-                </span>
-              )}
-              {item.error && (
-                <span className="absolute inset-0 flex items-center justify-center bg-destructive/20" aria-label="Falha no envio">
-                  <AlertCircle className="h-5 w-5 text-destructive" />
-                </span>
-              )}
-
-              <button
-                type="button"
-                onClick={() => remove(item.localId)}
-                aria-label={`Remover ${item.file.name}`}
-                className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black/80"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <form onSubmit={form.handleSubmit(onSubmit)} className="relative flex items-end gap-2">
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          hidden
-          accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/csv,application/json,application/zip,.docx,.xlsx,.pptx"
-          onChange={(event) => {
-            addFiles(Array.from(event.target.files ?? []))
-            event.target.value = ''
-          }}
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          aria-label="Anexar arquivos"
-          title={`Anexar arquivos (até ${MAX_ATTACHMENTS})`}
-          disabled={uploads.length >= MAX_ATTACHMENTS}
-          onClick={() => fileInputRef.current?.click()}
-          className="px-3"
-        >
-          <Paperclip className="h-4 w-4" />
-        </Button>
-        {suggestions.length > 0 && (
-          <ul
-            role="listbox"
-            aria-label="Mencionar membro"
-            className="absolute bottom-full left-0 z-20 mb-2 w-64 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
-          >
-            {suggestions.map((suggestion, index) => (
-              <li key={suggestion.id} role="option" aria-selected={index === activeIndex}>
                 <button
                   type="button"
-                  // mousedown keeps the textarea focused (click would blur it first)
-                  onMouseDown={(event) => {
-                    event.preventDefault()
-                    pickSuggestion(suggestion)
-                  }}
-                  onMouseEnter={() => setActiveIndex(index)}
-                  className={cn(
-                    'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm',
-                    index === activeIndex && 'bg-accent text-accent-foreground',
-                  )}
+                  onClick={() => remove(item.localId)}
+                  aria-label={`Remover ${item.file.name}`}
+                  className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black/80"
                 >
-                  <UserAvatar name={suggestion.name} avatarUrl={suggestion.avatarUrl} className="h-5 w-5" />
-                  <span className="truncate">{suggestion.name}</span>
+                  <X className="h-3 w-3" />
                 </button>
               </li>
             ))}
           </ul>
         )}
 
-        <Controller
-          name='message'
-          control={form.control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              ref={(element) => {
-                field.ref(element)
-                textareaRef.current = element
-              }}
-              rows={1}
-              maxLength={MAX_LENGTH}
-              placeholder="Mensagem... (@ para mencionar, Shift+Enter quebra linha)"
-              aria-label="Mensagem"
-              onChange={(event) => {
-                field.onChange(event)
-                updateMentionQuery(event.target.value, event.target.selectionStart)
-                if (event.target.value) emitTyping()
-              }}
-              onClick={(event) => updateMentionQuery(event.currentTarget.value, event.currentTarget.selectionStart)}
-              onBlur={() => {
-                field.onBlur()
-                setMention(null)
-              }}
-              onKeyDown={handleKeyDown}
-              onPaste={handlePaste}
-              className="flex-1 min-h-10 max-h-40 resize-none field-sizing-content focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="relative flex items-end gap-1 p-1.5">
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            hidden
+            accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/csv,application/json,application/zip,.docx,.xlsx,.pptx"
+            onChange={(event) => {
+              addFiles(Array.from(event.target.files ?? []))
+              event.target.value = ''
+            }}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Anexar arquivos"
+            title={`Anexar arquivos (até ${MAX_ATTACHMENTS})`}
+            disabled={uploads.length >= MAX_ATTACHMENTS}
+            onClick={() => fileInputRef.current?.click()}
+            className="size-10 shrink-0 text-muted-foreground hover:text-foreground"
+          >
+            <Paperclip className="size-4" />
+          </Button>
+          {suggestions.length > 0 && (
+            <ul
+              role="listbox"
+              aria-label="Mencionar membro"
+              className="absolute bottom-full left-0 z-20 mb-2 w-64 overflow-hidden rounded-lg border bg-popover p-1 text-popover-foreground shadow-[0_4px_16px_-4px_rgb(0_0_0/0.15)]"
+            >
+              {suggestions.map((suggestion, index) => (
+                <li key={suggestion.id} role="option" aria-selected={index === activeIndex}>
+                  <button
+                    type="button"
+                    // mousedown keeps the textarea focused (click would blur it first)
+                    onMouseDown={(event) => {
+                      event.preventDefault()
+                      pickSuggestion(suggestion)
+                    }}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm',
+                      index === activeIndex && 'bg-accent text-accent-foreground',
+                    )}
+                  >
+                    <UserAvatar name={suggestion.name} avatarUrl={suggestion.avatarUrl} className="h-5 w-5" />
+                    <span className="truncate">{suggestion.name}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
-        />
 
-        <Button
-          type="submit"
-          aria-label="Enviar mensagem"
-          disabled={!canSend}
-          className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-700 cursor-pointer text-white px-6"
-        >
-          <Send className="w-4 h-4" />
-        </Button>
-      </form>
+          <Controller
+            name='message'
+            control={form.control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                ref={(element) => {
+                  field.ref(element)
+                  textareaRef.current = element
+                }}
+                rows={1}
+                maxLength={MAX_LENGTH}
+                placeholder={placeholder}
+                aria-label="Mensagem"
+                onChange={(event) => {
+                  field.onChange(event)
+                  updateMentionQuery(event.target.value, event.target.selectionStart)
+                  if (event.target.value) emitTyping()
+                }}
+                onClick={(event) => updateMentionQuery(event.currentTarget.value, event.currentTarget.selectionStart)}
+                onBlur={() => {
+                  field.onBlur()
+                  setMention(null)
+                }}
+                onKeyDown={handleKeyDown}
+                onPaste={handlePaste}
+                className="field-sizing-content max-h-48 min-h-10 flex-1 resize-none border-0 bg-transparent px-1 py-2.5 shadow-none focus-visible:ring-0 dark:bg-transparent"
+              />
+            )}
+          />
+
+          <Button
+            type="submit"
+            size="icon"
+            aria-label="Enviar mensagem"
+            disabled={!canSend}
+            className="size-10 shrink-0 rounded-lg transition-[background-color,opacity,transform] active:scale-95"
+          >
+            <Send className="size-4" />
+          </Button>
+        </form>
+      </div>
+      <p className="mx-auto mt-1.5 hidden max-w-5xl px-1 text-[11px] text-muted-foreground md:block">
+        <kbd className="font-sans font-medium">Enter</kbd> envia · <kbd className="font-sans font-medium">Shift + Enter</kbd> quebra linha · <kbd className="font-sans font-medium">@</kbd> menciona
+      </p>
     </div>
   )
 }

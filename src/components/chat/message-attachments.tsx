@@ -66,7 +66,7 @@ export function MessageAttachments({ attachments, inverted }: MessageAttachments
             rel="noopener noreferrer"
             className={cn(
               'flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors',
-              inverted ? 'bg-black/15 hover:bg-black/25' : 'bg-gray-100 hover:bg-gray-200',
+              inverted ? 'bg-black/15 hover:bg-black/25' : 'bg-foreground/[0.06] hover:bg-foreground/10',
             )}
           >
             <Icon className="h-6 w-6 shrink-0" />

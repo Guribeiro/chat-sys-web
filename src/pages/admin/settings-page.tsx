@@ -56,8 +56,8 @@ export function ChannelSettingsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-xl font-semibold">Configurações do canal</h3>
-      <div className="space-y-2">
+      <h2 className="sr-only">Configurações do canal</h2>
+      <div className="space-y-4">
         <ChannelStatusCard channel={data} loading={isPending} error={errorMessage} />
         <UpdateChannelCard channel={data} loading={isPending} error={errorMessage} />
         <DeleteChannelCard channel={data} loading={isPending} error={errorMessage} />

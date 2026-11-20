@@ -1,132 +1,83 @@
+import { useForm } from "react-hook-form"
+import { Link } from "react-router"
+import { Loader2 } from "lucide-react"
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+import { AuthLayout } from "@/components/auth/auth-layout"
+import { PasswordInput } from "@/components/auth/password-input"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { authSlice } from "@/store/auth"
-import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { z } from 'zod'
-
-import logo from '@/assets/logo.png'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { createElement, useState } from "react"
-import { Link } from "react-router"
 
 const formSchema = z.object({
-  email: z.string().min(1, 'Informe seu usuário'),
-  password: z
-    .string()
-    .min(3, { message: 'Informe sua senha' })
+  email: z.string().trim().min(1, 'Informe seu e-mail'),
+  password: z.string().min(1, 'Informe sua senha'),
 })
 
 export const SigninPage = () => {
   const { loading, signin } = authSlice(state => state)
 
-  const [passwordVisibility, setPasswordVisibility] = useState(false)
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   })
 
-  async function onSubmit({ email, password }: z.infer<typeof formSchema>) {
-    signin({
-      email,
-      password
-    })
+  function onSubmit({ email, password }: z.infer<typeof formSchema>) {
+    signin({ email, password })
   }
 
   return (
-    <div className="bg-gradient-to-b from-primary to-secondary flex flex-col min-h-screen justify-center h-full w-full px-4">
-      <Card className="mx-auto max-w-md w-full py-6">
-        <div className="text-center">
-          <span className='text-muted-foreground text-2xl font-medium'>Realtime chat</span>
-        </div>
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Preencha com seu usuário e senha para acessar sua conta.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="grid gap-2">
-                      <FormLabel htmlFor="email">Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="email"
-                          autoComplete="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="grid gap-2">
-                      <FormLabel htmlFor="password">Senha</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            id="password"
-                            placeholder="******"
-                            type={passwordVisibility ? "text" : "password"}
-                            autoComplete="current-password"
-                            {...field}
-                          />
-                          <Button
-                            type="button"
-                            variant={"link"}
-                            className="absolute inset-y-0 right-0 flex cursor-pointer items-center p-3 text-muted-foreground"
-                            onClick={() => setPasswordVisibility(!passwordVisibility)}
-                          >
-                            {createElement(passwordVisibility ? EyeOffIcon : EyeIcon, {
-                              className: "h-6 w-6",
-                            })}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full">
-                  {loading ? <Loader2 className="animate-spin" /> : 'Login'}
-                </Button>
-                <Button asChild variant="link">
-                  <Link
-                    className="text-sm text-muted-foreground hover:text-primary transition-all duration-200"
-                    to="/forgot-password"
-                  >
-                    Esqueceu sua senha ?
+    <AuthLayout
+      title="Entrar"
+      description="Bom te ver de novo. Entre para continuar suas conversas."
+      footer={
+        <>
+          Não tem conta?{' '}
+          <Link className="font-medium text-primary underline-offset-4 hover:underline" to="/signup">Criar conta</Link>
+        </>
+      }
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5" noValidate>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="grid gap-2">
+                <FormLabel>E-mail</FormLabel>
+                <FormControl>
+                  <Input type="email" autoComplete="email" placeholder="voce@empresa.com" autoFocus {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <FormLabel>Senha</FormLabel>
+                  <Link to="/forgot-password" className="text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                    Esqueceu a senha?
                   </Link>
-                </Button>
-                <p className="text-center text-sm text-muted-foreground">
-                  Não tem conta?{' '}
-                  <Link className="font-medium text-primary hover:underline" to="/signup">
-                    Criar conta
-                  </Link>
-                </p>
-              </div>
-
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+                </div>
+                <FormControl>
+                  <PasswordInput autoComplete="current-password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="mt-1 w-full" disabled={loading}>
+            {loading && <Loader2 className="animate-spin" />}
+            {loading ? 'Entrando...' : 'Entrar'}
+          </Button>
+        </form>
+      </Form>
+    </AuthLayout>
   )
 }

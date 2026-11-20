@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/pt-br'
 import { Check, Loader, UserPlus2, X } from 'lucide-react'
 
 import { Button } from '../ui/button'
@@ -12,10 +13,10 @@ import { acceptInvite } from '@/http/accept-invite'
 import { rejectInvite } from '@/http/reject-invite'
 import { toast } from 'sonner'
 import { socket } from '@/socket';
-import { Badge } from '../ui/badge'
 
 
 dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 type InviteActionPayload = {
   inviteId: string;
@@ -111,30 +112,28 @@ export function PendingInvites() {
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button size="icon" variant="ghost">
-          <div className='relative'>
-            {pendingInvites.length > 0 && (
-              <Badge className='absolute bottom-3.5 left-2' >
-                {pendingInvites.length}
-              </Badge>
-            )}
-            <UserPlus2 className="size-4" />
-            <span className="sr-only">Pending invites</span>
-          </div>
+        <Button size="icon" variant="ghost" className="relative text-muted-foreground hover:text-foreground" title="Convites">
+          <UserPlus2 className="size-4" />
+          {pendingInvites.length > 0 && (
+            <span className="absolute right-1 top-1 min-w-4 rounded-full bg-unread px-1 text-[10px] font-semibold leading-4 text-unread-foreground tabular">
+              {pendingInvites.length}
+            </span>
+          )}
+          <span className="sr-only">Convites pendentes</span>
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-80 space-y-2">
 
 
-        <span className="block text-sm font-medium">
-          Pending Invites ({data?.length ?? 0})
+        <span className="block text-sm font-semibold">
+          Convites pendentes {!!data?.length && <span className="font-normal text-muted-foreground tabular">· {data.length}</span>}
         </span>
 
-        {isLoading && <Loader className='animate-spin' />}
+        {isLoading && <Loader className='size-4 animate-spin text-muted-foreground' />}
 
         {data?.length === 0 && !isLoading && (
-          <p className="text-sm text-muted-foreground">No invites found.</p>
+          <p className="text-sm text-muted-foreground">Nenhum convite por enquanto. Quando alguém te chamar para um canal, ele aparece aqui.</p>
         )}
 
         {data?.map((invite) => {
@@ -142,13 +141,13 @@ export function PendingInvites() {
             <div key={invite.id} className="space-y-2">
               <p className="text-sm leading-relaxed text-muted-foreground">
                 <span className="font-medium text-foreground">
-                  {invite.author?.name ?? 'Someone'}
+                  {invite.author?.name ?? 'Alguém'}
                 </span>{' '}
-                invited you to join{' '}
+                convidou você para{' '}
                 <span className="font-medium text-foreground">
-                  {invite.channel.title}
+                  #{invite.channel.title}
                 </span>{' '}
-                (role: <span className='font-medium text-foreground'>{invite.role}</span>)
+                como <span className='font-medium text-foreground'>{invite.role === 'ADMIN' ? 'administrador' : 'membro'}</span>
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {dayjs(invite.createdAt).fromNow()}
@@ -161,7 +160,7 @@ export function PendingInvites() {
                   variant="outline"
                 >
                   <Check className="mr-1.5 size-3" />
-                  Accept
+                  Aceitar
                 </Button>
 
                 <Button
@@ -171,7 +170,7 @@ export function PendingInvites() {
                   className="text-muted-foreground"
                 >
                   <X className="mr-1.5 size-3" />
-                  Reject
+                  Recusar
                 </Button>
               </div>
             </div>

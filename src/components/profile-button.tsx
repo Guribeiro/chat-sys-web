@@ -19,13 +19,15 @@ export function ProfileButton() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-3 outline-none" aria-label="Menu do perfil">
+      <DropdownMenuTrigger className="flex items-center gap-1.5 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" aria-label="Menu do perfil">
         {auth?.user && (
-          <UserAvatar
-            name={auth.user.name}
-            avatarUrl={auth.user.avatarUrl}
-            className={`border-2 ${isOnline ? 'border-green-500' : 'border-red-500'}`}
-          />
+          <span className="relative">
+            <UserAvatar name={auth.user.name} avatarUrl={auth.user.avatarUrl} />
+            <span
+              className={`absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full ring-2 ring-background ${isOnline ? 'bg-online' : 'bg-muted-foreground/50'}`}
+              title={isOnline ? 'Conectado' : 'Reconectando...'}
+            />
+          </span>
         )}
         <ChevronDown className="size-4 text-muted-foreground" />
       </DropdownMenuTrigger>

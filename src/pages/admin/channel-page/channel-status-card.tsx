@@ -1,12 +1,9 @@
-import { Combobox, ComboboxOption } from "@/components/combobox"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "react-router"
 import { z } from "zod"
@@ -16,11 +13,6 @@ import { handleAxiosError } from "@/lib/axios-error-handler"
 import { toast } from "sonner"
 import { updateChannelStatus } from "@/http/update-channel-status"
 import { Channel } from "@/http/fetch-channels"
-
-const statusOptions: ComboboxOption[] = [
-  { value: 'ATIVO', label: 'Ativo' },
-  { value: 'INATIVO', label: 'Inativo' },
-]
 
 const channelStatusForm = z.object({
   status: z.enum(['ATIVO', 'INATIVO']),
@@ -49,7 +41,6 @@ export function ChannelStatusCard({ channel, error, loading }: ChannelStatusCard
     },
     onSuccess: (data: Channel) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'channels', slug], });
-      console.log({ data })
       form.setValue('status', data.active ? 'ATIVO' : 'INATIVO')
       toast.success('Canal atualizado com sucesso')
     },
@@ -73,38 +64,26 @@ export function ChannelStatusCard({ channel, error, loading }: ChannelStatusCard
   }
 
 
-  return (
-    <Card className="bg-background flex flex-col justify-center lg:flex-row lg:items-center lg:justify-between">
-      <CardHeader>
-        <CardTitle className="text-foreground text-sm lg:text-xl">Alterar visibilidade do canal</CardTitle>
-        <CardDescription className="text-foreground/50 text-xs lg:text-base">Canais inativos ficam invisíveis para todos.</CardDescription>
-      </CardHeader>
-      <CardContent >
-        {loading || updateChannelStatusMutation.isPending ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${channel.active ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
-            <form  >
-              <Controller
-                name="status"
-                control={form.control}
-                defaultValue={channel.active ? 'ATIVO' : 'INATIVO'}
-                render={({ field }) => (
-                  <Combobox
-                    placeholder="Filtrar status"
-                    buttonPlaceholder="Status"
-                    options={statusOptions}
-                    {...field}
-                    onChange={status => updateChannelStatusMutation.mutate({ status: status as ChannelStatusForm['status'] })}
-                  />
-                )}
-              />
-            </form>
-          </div>
-        )}
+  const pending = loading || updateChannelStatusMutation.isPending
 
-      </CardContent>
+  return (
+    <Card className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-1">
+        <Label htmlFor="channel-active" className="text-base font-semibold">Canal ativo</Label>
+        <p className="text-sm text-muted-foreground">
+          Canais inativos somem da lista de todos os membros até serem reativados.
+        </p>
+      </div>
+      <div className="flex items-center gap-3">
+        {pending && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
+        <span className="text-sm text-muted-foreground">{channel.active ? 'Ativo' : 'Inativo'}</span>
+        <Switch
+          id="channel-active"
+          checked={channel.active}
+          disabled={pending}
+          onCheckedChange={(checked) => updateChannelStatusMutation.mutate({ status: checked ? 'ATIVO' : 'INATIVO' })}
+        />
+      </div>
     </Card>
   )
 }

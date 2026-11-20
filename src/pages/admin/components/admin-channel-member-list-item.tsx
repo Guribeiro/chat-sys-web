@@ -18,7 +18,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "../../../components/ui/button";
-import { Crown, Loader2 } from "lucide-react"
+import { Crown, Loader2, UserMinus } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 
 type ChannelMemberListItemProps = {
@@ -47,63 +48,63 @@ export function ChannelMemberListItem({ data: member }: ChannelMemberListItemPro
       toast.error(errorMessage)
     },
   })
+  const isMe = auth?.user?.id === member.member.id
+  const isAdmin = member.role === 'ADMIN'
+  const canRemove = !isMe && !isAdmin
+  const since = member.createdAt
+    ? new Date(member.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+    : null
+
   return (
-    <li
-      key={member.id}
-      className={`group border-1 border-foreground/10 hover:border-green-500 w-full text-left p-2 rounded-lg transition-colors hover:bg-background/60 text-foreground cursor-pointer`}
-    >
+    <li className="flex items-center gap-3 px-4 py-3">
+      <UserAvatar name={member.member.name} avatarUrl={member.member.avatarUrl} className="size-9" />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium">
+          {member.member.name}
+          {isMe && <span className="ml-1 font-normal text-muted-foreground">(você)</span>}
+        </p>
+        <p className="truncate text-sm text-muted-foreground">{member.member.email}</p>
+      </div>
+      <span className="hidden w-32 text-sm text-muted-foreground sm:block">{since && `Desde ${since}`}</span>
+      <span className={cn('flex w-28 items-center gap-1.5 text-sm', isAdmin ? 'font-medium' : 'text-muted-foreground')}>
+        {isAdmin && <Crown className="size-3.5 text-amber-500" />}
+        {isAdmin ? 'Administrador' : 'Membro'}
+      </span>
       <Dialog>
-        <form>
-          <DialogTrigger asChild>
-            <div className={`flex items-center space-x-2 text-sm}`}>
-              <div className='flex flex-1 items-center space-x-2'>
-                <UserAvatar
-                  name={member.member.name}
-                  avatarUrl={member.member.avatarUrl}
-                  className="border-2 border-white shadow-sm"
-                />
-                <span className={`truncate capitalize ${auth.user.id === member.member.id ? 'text-green-500 animate-pulse' : ''}`}>{member.member.name}</span>
-              </div>
-              {member.role === 'ADMIN' && (
-                <Crown className="w-4 h-4 text-yellow-500" />
-              )}
-            </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Remover do canal</DialogTitle>
-              {auth.user.id === member.member.id || member.role === 'ADMIN' ? (
-                <DialogDescription>
-                  Você não tem permissão para <span className='text-red-500 font-medium'>remover</span> este membro
-                </DialogDescription>
-              ) : (
-                <DialogDescription>
-                  Deseja mesmo <span className='text-red-500 font-medium'>remover</span> <strong>{member.member.name}</strong> do canal ?
-                </DialogDescription>
-              )}
-            </DialogHeader>
-
-            <DialogFooter className="flex flex-col gap-2 lg:gap-0">
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button
-                variant='destructive'
-                type="submit"
-                disabled={removeMemberFromChannelMutation.isPending || auth.user.id === member.member.id || member.role === 'ADMIN'}
-                onClick={() => removeMemberFromChannelMutation.mutate({ member_id: member.id })}
-              >
-                {removeMemberFromChannelMutation.isPending ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  'Remover membro'
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </form>
+        <DialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={!canRemove}
+            aria-label={`Remover ${member.member.name} do canal`}
+            title={canRemove ? 'Remover do canal' : isMe ? 'Você não pode remover a si mesmo' : 'Administradores não podem ser removidos'}
+            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          >
+            <UserMinus className="size-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Remover {member.member.name}?</DialogTitle>
+            <DialogDescription>
+              A pessoa deixa de ver o canal e as mensagens. Você pode convidá-la de novo depois.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <DialogClose asChild>
+              <Button variant="outline">Cancelar</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              disabled={removeMemberFromChannelMutation.isPending}
+              onClick={() => removeMemberFromChannelMutation.mutate({ member_id: member.id })}
+            >
+              {removeMemberFromChannelMutation.isPending && <Loader2 className="size-4 animate-spin" />}
+              Remover do canal
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
-
     </li>
   )
 }

@@ -14,7 +14,7 @@ type MessageContentProps = {
   content: string
   names: Map<string, string | null>
   currentUserId?: string
-  /** Own messages sit on the green bubble and need light accents */
+  /** Own messages sit on the coloured bubble and need light accents */
   inverted?: boolean
 }
 
@@ -38,8 +38,8 @@ export const MessageContent = memo(function MessageContent({ content, names, cur
             className={cn(
               'rounded px-1 font-medium',
               isMe
-                ? 'bg-amber-300/80 text-amber-950'
-                : inverted ? 'bg-white/25 text-white' : 'bg-green-100 text-green-800',
+                ? 'bg-mention text-mention-foreground'
+                : inverted ? 'bg-white/20' : 'bg-primary/12 text-primary dark:text-unread',
             )}
           >
             {children}
@@ -53,20 +53,26 @@ export const MessageContent = memo(function MessageContent({ content, names, cur
       )
     },
     p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-    ul: ({ children }) => <ul className="mb-1 list-disc pl-5 last:mb-0">{children}</ul>,
+    ul: ({ children, className }) => (
+      <ul className={cn('mb-1 last:mb-0', className === 'contains-task-list' ? 'list-none pl-0.5' : 'list-disc pl-5')}>{children}</ul>
+    ),
+    input: ({ type, checked }) =>
+      type === 'checkbox'
+        ? <input type="checkbox" checked={checked} readOnly disabled className="mr-1.5 size-3.5 translate-y-0.5 accent-current" />
+        : null,
     ol: ({ children }) => <ol className="mb-1 list-decimal pl-5 last:mb-0">{children}</ol>,
     blockquote: ({ children }) => (
-      <blockquote className={cn('mb-1 border-l-2 pl-2 italic opacity-90', inverted ? 'border-white/60' : 'border-gray-300')}>
+      <blockquote className={cn('mb-1 border-l-2 pl-2 italic opacity-90', 'border-current/40')}>
         {children}
       </blockquote>
     ),
     code: ({ className, children }) => (
-      <code className={cn('rounded px-1 py-0.5 font-mono text-[0.85em]', inverted ? 'bg-black/20' : 'bg-gray-100', className)}>
+      <code className={cn('rounded px-1 py-0.5 font-mono text-[0.85em]', inverted ? 'bg-black/20' : 'bg-foreground/[0.07]', className)}>
         {children}
       </code>
     ),
     pre: ({ children }) => (
-      <pre className={cn('mb-1 overflow-x-auto rounded p-2 text-xs [&>code]:bg-transparent [&>code]:p-0', inverted ? 'bg-black/20' : 'bg-gray-100')}>
+      <pre className={cn('mb-1 overflow-x-auto rounded p-2 text-xs [&>code]:bg-transparent [&>code]:p-0', inverted ? 'bg-black/20' : 'bg-foreground/[0.07]')}>
         {children}
       </pre>
     ),

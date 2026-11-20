@@ -1,8 +1,9 @@
+import { Link, useParams } from "react-router"
+import { Hash, AlertCircleIcon, AtSign, BellOff } from "lucide-react"
+
 import { Channel } from "@/http/fetch-channels"
 import { EmptyIndicator } from "../empty-indicator"
-import { Link, useParams } from "react-router"
-import { Hash, Loader2, AlertCircleIcon } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Skeleton } from "../ui/skeleton"
 import { UserAvatar } from "../user-avatar";
 import { usePresence } from "@/store/presence";
 import { cn } from "@/lib/utils";
@@ -12,36 +13,48 @@ type ChannelListProps = {
   loading?: boolean
   error?: string
   emptyTitle?: string
+  emptyContent?: string
 }
 
-export function ChannelList({ channels, error, loading, emptyTitle = 'Não há canais por aqui' }: ChannelListProps) {
+export function ChannelList({ channels, error, loading, emptyTitle = 'Não há canais por aqui', emptyContent }: ChannelListProps) {
   const { slug } = useParams()
   const onlineIds = usePresence(state => state.onlineIds)
 
   if (loading) {
-    return <div className="flex items-center justify-center bg-opacity-50 rounded-md cursor-not-allowed">
-      <Loader2 className="w-6 h-6 animate-spin" />
-    </div>
+    return (
+      <div className="space-y-1 px-2 py-1" aria-busy="true" aria-label="Carregando">
+        {[72, 56, 64].map(width => (
+          <div key={width} className="flex h-8 items-center gap-2">
+            <Skeleton className="size-4 rounded" />
+            <Skeleton className="h-3" style={{ width: `${width}%` }} />
+          </div>
+        ))}
+      </div>
+    )
   }
 
   if (error) {
     return (
-      <Alert variant="destructive">
-        <AlertCircleIcon />
-        <AlertTitle>Erro</AlertTitle>
-        <AlertDescription>
-          <p>{error}</p>
-        </AlertDescription>
-      </Alert>
+      <p className="mx-2 flex items-start gap-2 rounded-md bg-destructive/10 px-2 py-1.5 text-xs text-destructive">
+        <AlertCircleIcon className="mt-px size-3.5 shrink-0" />
+        {error}
+      </p>
     )
   }
 
+  if (!channels?.length) {
+    return <EmptyIndicator title={emptyTitle} content={emptyContent} className="px-4" />
+  }
+
   return (
-    <ul className='overflow-y-scroll max-h-96 no-scrollbar gap-2 flex flex-col'>
-      {!channels?.length && !loading && <EmptyIndicator title={emptyTitle} />}
-      {channels?.map(channel => {
+    <ul className="flex flex-col gap-px">
+      {channels.map(channel => {
         const isActive = slug === channel.slug
         const unread = isActive ? 0 : channel.unreadCount ?? 0
+        const addressed = isActive ? 0 : channel.unreadMentionCount ?? 0
+        const muted = !!channel.muted
+        // Muted: a quiet dot for activity, the counter only for what is addressed to me
+        const badge = muted ? addressed : unread
         const isDirect = channel.type === 'DIRECT'
         const title = isDirect ? channel.peer?.name ?? 'Mensagem direta' : channel.title
         const online = isDirect && !!channel.peer && onlineIds.has(channel.peer.id)
@@ -51,39 +64,48 @@ export function ChannelList({ channels, error, loading, emptyTitle = 'Não há c
             <Link
               to={`/channels/${channel.slug}`}
               aria-current={isActive ? 'page' : undefined}
+              title={!isDirect && channel.description ? channel.description : undefined}
               className={cn(
-                'block w-full rounded-lg border-1 p-2 text-left text-foreground transition-colors hover:border-foreground/10 hover:bg-background/60',
-                isActive ? 'border-green-500 hover:border-green-500' : 'border-transparent',
+                'flex h-9 items-center gap-2 rounded-md px-2 text-sm transition-colors lg:h-8',
+                'focus-visible:outline-2 focus-visible:outline-ring',
+                isActive
+                  ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground'
+                  : badge
+                    ? 'font-semibold text-foreground hover:bg-sidebar-accent/60'
+                    : muted
+                      ? 'text-muted-foreground/70 hover:bg-sidebar-accent/60 hover:text-foreground'
+                      : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
               )}
             >
-              <div className={`flex items-center gap-2 text-sm ${isActive ? 'text-green-500' : 'font-normal'}`}>
-                {isDirect ? (
-                  <span className="relative shrink-0">
-                    <UserAvatar name={channel.peer?.name} avatarUrl={channel.peer?.avatarUrl} className="h-6 w-6" />
-                    <span
-                      className={cn(
-                        'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-card',
-                        online ? 'bg-green-500' : 'bg-gray-400',
-                      )}
-                      aria-label={online ? 'online' : 'offline'}
-                    />
-                  </span>
-                ) : (
-                  <Hash className="w-4 h-4 shrink-0" />
-                )}
-                <span className={cn('text-sm truncate flex-1', !isDirect && 'capitalize', unread && 'font-semibold')}>{title}</span>
-                {unread > 0 && (
+              {isDirect ? (
+                <span className="relative shrink-0">
+                  <UserAvatar name={channel.peer?.name} avatarUrl={channel.peer?.avatarUrl} className="size-5" />
                   <span
-                    className="ml-auto rounded-full bg-green-600 px-1.5 text-[10px] font-semibold leading-4 text-white"
-                    aria-label={`${unread} mensagens não lidas`}
-                  >
-                    {unread > 99 ? '99+' : unread}
-                  </span>
-                )}
-              </div>
-              {!isDirect && channel.description && (
-                <p className="text-xs text-gray-500 ml-6 mt-1 truncate">{channel.description}</p>
+                    className={cn(
+                      'absolute -bottom-0.5 -right-0.5 size-2 rounded-full ring-2 ring-sidebar',
+                      online ? 'bg-online' : 'bg-muted-foreground/40',
+                    )}
+                  />
+                  <span className="sr-only">{online ? '(online)' : '(offline)'}</span>
+                </span>
+              ) : (
+                <Hash className={cn('size-4 shrink-0', isActive ? 'text-primary' : 'opacity-70')} />
               )}
+              <span className={'min-w-0 flex-1 truncate'}>{title}</span>
+              {muted && <BellOff className="size-3.5 shrink-0 opacity-60" aria-label="Silenciada" />}
+              {addressed > 0 && !muted && (
+                <AtSign className="size-3.5 shrink-0 text-unread" aria-label="Menciona ou responde você" />
+              )}
+              {badge > 0 ? (
+                <span
+                  className="rounded-full bg-unread px-1.5 text-[10px] font-semibold leading-4 text-unread-foreground tabular"
+                  aria-label={muted ? `${badge} menções ou respostas não lidas` : `${badge} mensagens não lidas`}
+                >
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              ) : muted && unread > 0 ? (
+                <span className="size-1.5 shrink-0 rounded-full bg-muted-foreground/60" aria-label="Há mensagens novas" />
+              ) : null}
             </Link>
           </li>
         )

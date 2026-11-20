@@ -27,22 +27,24 @@ import { Button } from '../../../components/ui/button';
 import { createChannelMember } from '@/http/create-channel-member';
 import { MembersCombobox } from '../../../components/channel-members-sidebar/members-combobox';
 import { handleAxiosError } from '@/lib/axios-error-handler';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createChannelInvite } from '@/http/create-channel-invite';
 import { roleSchema } from '@/schemas';
 
 const createChannelMemberFormSchema = z.object({
-  invitee_id: z.string().min(1, 'Adicione um titulo para o canal'),
+  invitee_id: z.string({ required_error: 'Escolha quem você quer convidar' }).min(1, 'Escolha quem você quer convidar'),
   role: roleSchema
 })
 
 type CreateChannelMemberForm = z.infer<typeof createChannelMemberFormSchema>
 
-const defaultValues: CreateChannelMemberForm = {
-  invitee_id: undefined
+const defaultValues: Partial<CreateChannelMemberForm> = {
+  invitee_id: undefined,
+  role: 'MEMBER',
 }
 
-export const AdminChannelMemberForm = () => {
+/** `memberIds`: people already in the channel, hidden from the picker */
+export const AdminChannelMemberForm = ({ memberIds = [] }: { memberIds?: string[] }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const navigate = useNavigate()
@@ -64,18 +66,17 @@ export const AdminChannelMemberForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'channels', 'members', slug] });
       handleCancelCreatingChannel()
-      toast.success('Membro adicionado com sucesso')
+      toast.success('Convite enviado. A pessoa entra no canal quando aceitar.')
     },
     onError: (error) => {
       const errorMessage = handleAxiosError(error)
-      form.setValue('invitee_id', undefined)
+      form.resetField('invitee_id')
       form.setError('invitee_id', { message: errorMessage })
     },
   })
 
   const handleCreateInvite = ({ invitee_id, role }: CreateChannelMemberForm) => {
-    const [, id] = invitee_id.split('/')
-    createInvite.mutate({ invitee_id: id, role })
+    createInvite.mutate({ invitee_id, role })
   };
 
   const handleCancelCreatingChannel = () => {
@@ -106,11 +107,12 @@ export const AdminChannelMemberForm = () => {
                 name="invitee_id"
                 render={({ field }) => (
                   <FormItem className='flex flex-col gap-0.5'>
-                    <FormLabel className="text-sm font-medium text-foreground">Select a member</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">Pessoa</FormLabel>
                     <FormControl>
                       <MembersCombobox
-                        placeholder="Buscar usuário..."
-                        {...field}
+                        value={field.value}
+                        onChange={field.onChange}
+                        excludeIds={memberIds}
                       />
                     </FormControl>
                     <FormMessage />
@@ -122,7 +124,7 @@ export const AdminChannelMemberForm = () => {
                 name="role"
                 render={({ field }) => (
                   <FormItem className='flex flex-col gap-0.5'>
-                    <FormLabel className="text-sm font-medium text-foreground">Select the member role</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">Papel no canal</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -130,12 +132,12 @@ export const AdminChannelMemberForm = () => {
                         value={field.value}
                       >
                         <SelectTrigger >
-                          <SelectValue placeholder="Select a role" />
+                          <SelectValue placeholder="Escolha um papel" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup >
-                            <SelectItem value="ADMIN">Admin</SelectItem>
-                            <SelectItem value="MEMBER">Member</SelectItem>
+                            <SelectItem value="ADMIN">Administrador</SelectItem>
+                            <SelectItem value="MEMBER">Membro</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>

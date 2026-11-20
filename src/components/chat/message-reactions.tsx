@@ -55,7 +55,7 @@ export function ReactionPicker({ onPick, align = 'start', className }: ReactionP
                 onPick(emoji)
                 setOpen(false)
               }}
-              className="h-9 w-9 rounded-md text-xl leading-none transition-transform hover:bg-muted hover:scale-110"
+              className="size-9 rounded-md text-xl leading-none transition-transform duration-150 hover:scale-110 hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
             >
               {emoji}
             </button>
@@ -88,14 +88,14 @@ export function MessageReactions({ reactions, onToggle, alignEnd }: MessageReact
           aria-pressed={group.mine}
           aria-label={`${group.emoji} ${group.count}: ${group.names.join(', ')}`}
           className={cn(
-            'flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-colors',
+            'flex h-6 items-center gap-1 rounded-full border px-2 text-xs transition-colors',
             group.mine
-              ? 'border-green-500 bg-green-50 text-green-800 dark:bg-green-950 dark:text-green-200'
+              ? 'border-primary/50 bg-primary/10 text-foreground hover:bg-primary/15'
               : 'border-border bg-background text-foreground hover:bg-muted',
           )}
         >
           <span className="text-sm leading-none">{group.emoji}</span>
-          <span className="tabular-nums">{group.count}</span>
+          <span className="tabular font-medium">{group.count}</span>
         </button>
       ))}
     </div>

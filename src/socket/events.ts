@@ -3,6 +3,26 @@
 import type { MessageItem, MessageReaction } from '@/http/fetch-channel-messages'
 import type { Invite } from '@/http/get-pending-invites'
 
+export interface ChannelActivity {
+  channelId: string
+  messageId: string
+  authorId: string
+  authorName: string | null
+  /** Plain-text preview, used for desktop notifications of DMs */
+  preview: string
+}
+
+export interface ActivityNotification {
+  reason: 'mention' | 'reply'
+  channelId: string
+  channelSlug: string
+  channelTitle: string
+  channelType: 'GROUP' | 'DIRECT'
+  messageId: string
+  author: { id: string; name: string | null; avatarUrl: string | null }
+  preview: string
+}
+
 export type AckResponse = { ok: true; channelId: string } | { ok: false; error: string }
 
 export interface ServerToClientEvents {
@@ -12,7 +32,7 @@ export interface ServerToClientEvents {
   'channel:message_updated': (payload: { channelId: string; message: MessageItem }) => void
   'channel:message_deleted': (payload: { channelId: string; messageId: string; deletedAt: string }) => void
   /** Sent to each member's personal room on every new message, used for unread badges */
-  'channel:activity': (payload: { channelId: string; messageId: string; authorId: string }) => void
+  'channel:activity': (payload: ChannelActivity) => void
   'channel:typing': (payload: { channelId: string; userId: string; name: string | null }) => void
   'channel:message_reactions': (payload: { channelId: string; messageId: string; reactions: MessageReaction[] }) => void
   'channel:updated': (payload: { channelId: string; slug: string; title: string; active: boolean }) => void
@@ -20,14 +40,8 @@ export interface ServerToClientEvents {
   'channel:member_added': (payload: { channelId: string; userId: string }) => void
   'channel:member_removed': (payload: { channelId: string; userId: string }) => void
   'notification:new_invite': (payload: { invite: Invite }) => void
-  'notification:mention': (payload: {
-    channelId: string
-    channelSlug: string
-    channelTitle: string
-    messageId: string
-    author: { id: string; name: string | null }
-    preview: string
-  }) => void
+  /** Something addressed to me: a mention, or a reply to one of my messages */
+  'notification:activity': (payload: ActivityNotification) => void
 }
 
 export interface ClientToServerEvents {

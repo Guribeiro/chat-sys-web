@@ -1,19 +1,20 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { authSlice } from "@/store/auth"
-import { createAccount } from "@/http/create-account"
-import { handleAxiosError } from "@/lib/axios-error-handler"
-import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { Link } from "react-router"
 import { useMutation } from "@tanstack/react-query"
+import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { z } from 'zod'
-
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createElement, useState } from "react"
-import { Link } from "react-router"
+
+import { AuthLayout } from "@/components/auth/auth-layout"
+import { PasswordInput } from "@/components/auth/password-input"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { createAccount } from "@/http/create-account"
+import { handleAxiosError } from "@/lib/axios-error-handler"
+import { authSlice } from "@/store/auth"
 
 const formSchema = z.object({
   name: z.string().trim().min(1, 'Informe seu nome').max(100),
@@ -29,7 +30,7 @@ type SignupForm = z.infer<typeof formSchema>
 
 export const SignupPage = () => {
   const signin = authSlice(state => state.signin)
-  const [passwordVisibility, setPasswordVisibility] = useState(false)
+  const [passwordVisible, setPasswordVisible] = useState(false)
 
   const form = useForm<SignupForm>({
     resolver: zodResolver(formSchema),
@@ -42,112 +43,82 @@ export const SignupPage = () => {
       // Account created: sign in right away (the routes switch to /channels on success)
       await signin({ email, password })
     },
-    onSuccess: () => toast.success('Conta criada! Bem-vindo(a).'),
+    onSuccess: () => toast.success('Conta criada! Boas-vindas.'),
     onError: (error) => toast.error(handleAxiosError(error)),
   })
 
   return (
-    <div className="bg-gradient-to-b from-primary to-secondary flex flex-col min-h-screen justify-center h-full w-full px-4">
-      <Card className="mx-auto max-w-md w-full py-6">
-        <div className="text-center">
-          <span className='text-muted-foreground text-2xl font-medium'>Realtime chat</span>
-        </div>
-        <CardHeader>
-          <CardTitle className="text-2xl">Criar conta</CardTitle>
-          <CardDescription>
-            Preencha seus dados para começar a conversar.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit((values) => signupMutation.mutate(values))} className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="grid gap-2">
-                    <FormLabel htmlFor="name">Nome</FormLabel>
-                    <FormControl>
-                      <Input id="name" autoComplete="name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="grid gap-2">
-                    <FormLabel htmlFor="email">Email</FormLabel>
-                    <FormControl>
-                      <Input id="email" type="email" autoComplete="email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="grid gap-2">
-                    <FormLabel htmlFor="password">Senha</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          id="password"
-                          placeholder="******"
-                          type={passwordVisibility ? "text" : "password"}
-                          autoComplete="new-password"
-                          {...field}
-                        />
-                        <Button
-                          type="button"
-                          variant="link"
-                          aria-label={passwordVisibility ? 'Ocultar senha' : 'Mostrar senha'}
-                          className="absolute inset-y-0 right-0 flex cursor-pointer items-center p-3 text-muted-foreground"
-                          onClick={() => setPasswordVisibility(!passwordVisibility)}
-                        >
-                          {createElement(passwordVisibility ? EyeOffIcon : EyeIcon, { className: "h-6 w-6" })}
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem className="grid gap-2">
-                    <FormLabel htmlFor="confirmPassword">Confirmar senha</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="confirmPassword"
-                        placeholder="******"
-                        type={passwordVisibility ? "text" : "password"}
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={signupMutation.isPending}>
-                {signupMutation.isPending ? <Loader2 className="animate-spin" /> : 'Criar conta'}
-              </Button>
-              <Button asChild variant="link">
-                <Link className="text-sm text-muted-foreground hover:text-primary transition-all duration-200" to="/">
-                  Já tem conta? Entrar
-                </Link>
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+    <AuthLayout
+      title="Criar conta"
+      description="Leva menos de um minuto. Depois é só entrar nos canais do seu time."
+      footer={
+        <>
+          Já tem conta?{' '}
+          <Link className="font-medium text-primary underline-offset-4 hover:underline" to="/">Entrar</Link>
+        </>
+      }
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit((values) => signupMutation.mutate(values))} className="grid gap-5" noValidate>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="grid gap-2">
+                <FormLabel>Nome</FormLabel>
+                <FormControl>
+                  <Input autoComplete="name" autoFocus {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="grid gap-2">
+                <FormLabel>E-mail</FormLabel>
+                <FormControl>
+                  <Input type="email" autoComplete="email" placeholder="voce@empresa.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="grid gap-2">
+                <FormLabel>Senha</FormLabel>
+                <FormControl>
+                  <PasswordInput autoComplete="new-password" visible={passwordVisible} onVisibleChange={setPasswordVisible} {...field} />
+                </FormControl>
+                <FormDescription className="text-xs">Pelo menos 6 caracteres.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem className="grid gap-2">
+                <FormLabel>Confirmar senha</FormLabel>
+                <FormControl>
+                  <PasswordInput autoComplete="new-password" visible={passwordVisible} onVisibleChange={setPasswordVisible} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="mt-1 w-full" disabled={signupMutation.isPending}>
+            {signupMutation.isPending && <Loader2 className="animate-spin" />}
+            {signupMutation.isPending ? 'Criando conta...' : 'Criar conta'}
+          </Button>
+        </form>
+      </Form>
+    </AuthLayout>
   )
 }

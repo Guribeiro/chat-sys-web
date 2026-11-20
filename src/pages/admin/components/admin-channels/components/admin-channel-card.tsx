@@ -1,51 +1,41 @@
-import { Channel } from "@/http/fetch-channels"
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Hash, Settings, Users } from "lucide-react";
 import { Link } from "react-router";
-import { Button } from "@/components/ui/button";
+import { ChevronRight, Hash, Users } from "lucide-react";
+
+import { Channel } from "@/http/fetch-channels"
+import { cn } from "@/lib/utils";
 
 type AdminChannelCardProps = {
   data: Channel
 }
 
+/** One channel row in the admin list; the whole row opens the channel's settings. */
 export function AdminChannelCard({ data: channel }: AdminChannelCardProps) {
   return (
-    <Card key={channel.id} className="bg-transparent hover:shadow-lg dark:hover:border-green-500 transition-transform hover:translate-y-[-1px]">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-7 h-7 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center">
-              <Hash className="h-3 w-3 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-lg capitalize">#{channel.title}</CardTitle>
-              {channel.description && (
-                <p className="text-sm text-foreground/50 mt-1">{channel.description}</p>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <div className={`w-3 h-3 rounded-full ${channel.active ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
-          </div>
-
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between space-x-2 text-sm text-foreground/50">
-          <Button asChild variant='ghost' className='text-foreground'>
-            <Link to={`/admin/channels/${channel.slug}/members`}>
-              <Users className="w-4 h-4" />
-              <span>{channel._count.members} membros</span>
-            </Link>
-          </Button>
-          <Button asChild variant='ghost' className='text-foreground'>
-            <Link to={`/admin/channels/${channel.slug}/settings`}>
-              <Settings className="w-4 h-4" />
-              <p className='hidden lg:flex'>Configurações</p>
-            </Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <li>
+      <Link
+        to={`/admin/channels/${channel.slug}/members`}
+        className="group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+          <Hash className="size-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium">{channel.title}</span>
+          <span className="block truncate text-sm text-muted-foreground">{channel.description || 'Sem descrição'}</span>
+        </span>
+        <span className="hidden items-center gap-1.5 text-sm text-muted-foreground tabular sm:flex">
+          <Users className="size-4" />
+          {channel._count.members}
+        </span>
+        <span className={cn(
+          'flex w-20 items-center gap-1.5 text-xs font-medium',
+          channel.active ? 'text-foreground' : 'text-muted-foreground',
+        )}>
+          <span className={cn('size-1.5 rounded-full', channel.active ? 'bg-online' : 'bg-muted-foreground/50')} />
+          {channel.active ? 'Ativo' : 'Inativo'}
+        </span>
+        <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+      </Link>
+    </li>
   )
 }

@@ -1,36 +1,14 @@
-import { motion, Transition, Variants } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ReactNode } from 'react';
 
-const pageVariants: Variants = {
-  initial: {
-    opacity: 0,
-    y: '-10vh', // Example: slide in from left
-  },
-  in: {
-    opacity: 1,
-    y: 0,
-  },
-  out: {
-    opacity: 0,
-    y: '100vh', // Example: slide out to right
-  },
-};
-
-const pageTransition: Transition = {
-  type: 'tween',
-  ease: 'anticipate',
-  duration: 0.5,
-};
-
-
+/** Short entrance for document-like pages (profile, admin). Never used inside the chat. */
 export function PageTransition({ children }: { children: ReactNode }) {
+  const reduce = useReducedMotion()
   return (
     <motion.div
-      initial="initial"
-      animate="in"
-      exit="out"
-      variants={pageVariants}
-      transition={pageTransition}
+      initial={reduce ? false : { opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
