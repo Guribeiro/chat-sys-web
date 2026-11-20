@@ -1,10 +1,14 @@
 import { io, type Socket } from 'socket.io-client';
 import type { ClientToServerEvents, ServerToClientEvents } from './events';
 
-const URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3333';
+// The realtime server may run apart from the API (REALTIME_MODE=standalone); defaults to the API
+const URL = import.meta.env.VITE_SOCKET_URL ?? import.meta.env.VITE_API_URL ?? 'http://localhost:3333';
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(URL, {
   autoConnect: false,
+  // WebSocket straight away (no HTTP long-polling first): with several realtime instances behind a
+  // load balancer, polling would need sticky sessions to keep hitting the same instance
+  transports: ['websocket'],
 });
 
 /** Connects the socket authenticated with the user's JWT (no-op if already connected). */
